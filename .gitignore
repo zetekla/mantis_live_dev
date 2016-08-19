@@ -16,6 +16,7 @@ config_inc.php
 node_modules/
 public/lib/
 config/db/
+log/
 app/tests/coverage/
 .bower-*/
 .idea/

@@ -42,11 +42,12 @@ var search_process = function(){
 		//contentType: "application/json",
 		// dataType: 'json'
 	}).done(function(data){
-		console.log(data);
 		data = JSON.parse(data);
 		console.log(data);
 		$("#log-wrapper").empty();
 		$("#search-wrapper") .empty();
+
+    var serials = [];
 
 		if (data.all){
 			var output2 = ` <style>
@@ -57,6 +58,8 @@ var search_process = function(){
 		                  <tr>`;
 			if (data.all.count > 0){
 				data.all.response.map(function(d, idx){
+          serials.push(d.serial_scan);
+
 					if (idx < 1){
 						for(var i in d){
 							output2 += '<th class="text-center text-uppercase">' + i + '</th>';
@@ -68,14 +71,30 @@ var search_process = function(){
 					for(var j in d){
 						output2 += '<td class="text-center">' + d[j] + '</td>';
 					}
-					output2 += '<td class="text-center">' + idx+ '</td></tr>' ;
+					output2 += '<td class="text-center">' + String(idx+1) + '</td></tr>' ;
 				});
-			}
+      }
 			$("#search-wrapper")
 				.append( output2 + "<br/>")
 				.addClass("bg-success")
 				.css({  "max-height":"300px", "overflow-y" : "auto" })
 				.animate({"scrollTop": $("#search-wrapper")[0].scrollHeight}, "slow");
+
+      if(serials){
+        var output1 = '<table class="col-md-12">';
+        var i = 0;
+        serials.map(elem =>{
+            i++;
+          output1 += '<div class="col-md-3">' + String(i) + '. ' + elem + '</div>';
+        });
+
+        output1 +=  '<div>';
+        $("#log-wrapper")
+          .append( output1 + "<br/>")
+          .addClass("bg-success")
+          .css({  "max-height":"300px", "overflow-y" : "auto" })
+          .animate({"scrollTop": $("#log-wrapper")[0].scrollHeight}, "slow");
+      }
 		}
 	});
 };
