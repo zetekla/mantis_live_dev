@@ -1,0 +1,24 @@
+<body style="color:white;background-color:rgb(0, 58, 88)"><pre>$ init() testing_mode = false<br>$ init() Xquery.count = 1<br>$ init() Tquery.count = 0<br>$ init() T_res_arr: null<br>cond(Tquery.count<1), current X_res_array: _1RY0KM2UM, 000123455A, 0000123455, 1218783600, 910-908854001, P, 500, 14454, CHOOSE MANUFACTURING CO., LLC<br>res() $t_c_name_lookup by X.unique_key: {
+    "count": 0
+}<br>$t_customer_lookup: {
+    "count": 0
+}<br>prep() to Queries for InsertALL everything cuz customer_lookup BY name = 'CHOOSE MANUFACTURING CO., LLC' gives no result -> customer NOT exist.<br> $ src: {
+    "UNIQ_KEY": "_1RY0KM2UM",
+    "WO_NO": "000123455A",
+    "SO_NO": "0000123455",
+    "DUE_DATE": 1218783600,
+    "ASSY_NO": "910-908854001",
+    "REVISION": "P",
+    "QTY": "500",
+    "CUST_PO_NO": "14454",
+    "CUST_NAME": "CHOOSE MANUFACTURING CO., LLC",
+    "TIME_STAMP": 1470937932,
+    "STATUS": "1",
+    "Mocha": null,
+    "wo_so_table": "mantis_wo_so_table_test",
+    "assembly_table": "mantis_assembly_table_test",
+    "customer_table": "mantis_customer_table_test",
+    "insert_customer_table": "\r\n\tINSERT INTO %s\r\n\t\t(id, name, pono, status, acct_date, time_stamp)\r\n\tVALUES\r\n\t\t( null, '%s', '%s', '%d', '%d', '%d' )",
+    "insert_assembly_table": "\r\n\tINSERT INTO %s\r\n\t\t(id, customer_id, number, revision, unique_key)\r\n\tVALUES\r\n\t\t( null, '%d', '%s', '%s', '%s' )",
+    "insert_wo_so_table": "\r\n\tINSERT INTO %s\r\n\t\t(id, wono, sono, quantity, due, unique_key)\r\n\tVALUES\r\n\t\t( null, '%s', '%s', '%d', '%d', '%s' )"
+}<br>$ fullhouse: _1RY0KM2UM, 000123455A, 0000123455, 910-908854001, P, CHOOSE MANUFACTURING CO., LLC, 10, 14454, 1218783600, 500</pre></body>

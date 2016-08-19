@@ -1,0 +1,32 @@
+<body style="color:white;background-color:rgb(0, 58, 88)">$ init() testing_mode = false<br><br>$ init() Xquery.count = 1<br><br>$ init() Tquery.count = 1<br><br>$ init() T_res_arr: {
+    "UNIQ_KEY": "_4M70Y1X36",
+    "WO_NO": "000195154C",
+    "SO_NO": "0000195154",
+    "ASSY_NO": "LF950-18-0074-02",
+    "REVISION": "N59",
+    "CUST_NAME": "XYLEM",
+    "CUST_ID": "5",
+    "CUST_PO_NO": "322853",
+    "DUE_DATE": "1467270000",
+    "QTY": "80"
+}<br><br>$ diff(): {
+    "REVISION": [
+        "N",
+        "N59"
+    ]
+}<br><br>$ load() must-approved fields: [
+    "SO_NO",
+    "ASSY_NO",
+    "CUST_NAME"
+]<br><br>$ finally, unmatch: N59<br><br>$ fullhouse: {
+    "UNIQ_KEY": "_4M70Y1X36",
+    "WO_NO": "000195154C",
+    "SO_NO": "0000195154",
+    "ASSY_NO": "LF950-18-0074-02",
+    "REVISION": "N",
+    "CUST_NAME": "XYLEM",
+    "CUST_ID": "5",
+    "CUST_PO_NO": "322853",
+    "DUE_DATE": "1467270000",
+    "QTY": "80"
+}</body>

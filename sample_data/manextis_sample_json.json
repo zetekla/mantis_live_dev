@@ -1,0 +1,42 @@
+[
+	{
+		"name": "Ninja Turtle",
+		"attribute": "agile tactic",
+		"present": "chapter 44"
+	},
+	{
+		"name": "Wolfverine",
+		"attribute": "claws attack",
+		"present": "chapter 5"
+	},
+	{
+		"name": "Jean",
+		"attribute": "psychiatrist",
+		"present": "chapter 2"
+	},
+	{
+		"name": "Rogue",
+		"attribute": "physical swiftness",
+		"present": "chapter 4"
+	},
+	{
+		"name": "Scott",
+		"attribute": "cyclop laser",
+		"present": "chapter 2"
+	},
+	{
+		"name": "Phoenix",
+		"attribute": "fire element, fire ball",
+		"present": "chapter 6"
+	},
+	{
+		"name": "Psylocke",
+		"attribute": "psychic",
+		"present": "chapter 9"
+	},
+	{
+		"name": "Magneto",
+		"attribute": "magnetism, metal attraction",
+		"present": "chapter 15"
+	}
+]

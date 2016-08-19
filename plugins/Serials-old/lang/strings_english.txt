@@ -1,0 +1,29 @@
+<?php
+$s_menu_serials_link = "Serial Scan";
+$s_plugin_Serials_title = "Serial Number Entry Form";
+$s_plugin_Serials_manage = "Manage Serials Plugin";
+$s_plugin_Serials_format = "Format";
+$s_plugin_Serials_format_title = "Serials Format";
+$s_plugin_Serials_format_example = "Format Example";
+$s_plugin_Serials_customer_name = "Customer";
+$s_plugin_Serials_assembly_number = "Assembly Number";
+$s_plugin_Serials_revision = "Revision";
+$s_plugin_Serials_sales_order = "Sales Order Number";
+$s_plugin_Serials_scan_title = "Please Scan the BarCode.";
+$s_plugin_Serials_scan_list = "Serial Scan List View";
+$s_plugin_Serials_print = "Print Serial list";
+$s_plugin_Serials_new_format = "New Serial Format Has Been Added.";
+$s_plugin_Serials_update_format = "Existing Serial Format Has Been Updated.";
+$s_plugin_Serials_error_duplication = "The Serial Number you have scanned is a Duplicate of the entry Below!";
+$s_plugin_Serials_error_incorrect_format = "The Serial Number you have scanned does not contain the correct Format!";
+
+$s_plugin_Serials_plugin_format_title = "Serial Scan";
+$s_plugin_Serials_plugin_format_config = "Configurations";
+$s_plugin_Serials_plugin_format_format_text = "Display Serial Format Link on Serial Scan main page.";
+$s_plugin_Serials_plugin_format_enabled = "On";
+$s_plugin_Serials_plugin_format_disabled = "Off";
+$s_plugin_Serials_plugin_format_search_text = "Display Search Button on Serial Scan main page.";
+$s_plugin_Serials_plugin_format_format_threshold = "Minimum threshold for accessing Serial String Formatting.";
+$s_plugin_Serials_plugin_format_search_threshold = "Minimum threshold to use the search function.";
+$s_plugin_Serials_plugin_format_serials_view_threshold = "Minimum threshold to access Serial Scan Plugin.";
+$s_plugin_Serials_plugin_format_manage_threshold = "Minimum threshold to Manage Serial Scan Plugin.";

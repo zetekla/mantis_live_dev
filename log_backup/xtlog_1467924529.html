@@ -1,0 +1,32 @@
+<body style="color:white;background-color:rgb(0, 58, 88)">$ init() testing_mode = false<br><br>$ init() Xquery.count = 1<br><br>$ init() Tquery.count = 0<br><br>$ init() T_res_arr: null<br><br>cond(Tquery.count<1), current X_res_array: _4LZ0NE98B, 00197296A4, 0000197296, 1467270000, LF990-21993-1, H, 1500, 76314, SURE-FIRE, L.L.C.<br><br>res() $t_c_name_lookup by X.unique_key: {
+    "count": 0
+}<br><br>$t_customer_lookup: {
+    "count": 1,
+    "response": [
+        {
+            "CUST_NAME": "SURE-FIRE, L.L.C.",
+            "CUST_ID": "6",
+            "CUST_PO_NO": "75995",
+            "TIME_STAMP": "1467923843"
+        }
+    ]
+}<br><br>@344 $ customer_id: "6"<br><br> $ src: {
+    "UNIQ_KEY": "_4LZ0NE98B",
+    "WO_NO": "00197296A4",
+    "SO_NO": "0000197296",
+    "DUE_DATE": 1467270000,
+    "ASSY_NO": "LF990-21993-1",
+    "REVISION": "H",
+    "QTY": "1500",
+    "CUST_PO_NO": "76314",
+    "CUST_NAME": "SURE-FIRE, L.L.C.",
+    "TIME_STAMP": 1467924529,
+    "STATUS": "1",
+    "Mocha": null,
+    "wo_so_table": "mantis_wo_so_table_test",
+    "assembly_table": "mantis_assembly_table_test",
+    "customer_table": "mantis_customer_table_test",
+    "customer_id": "6",
+    "insert_assembly_table": "\r\n\tINSERT INTO %s\r\n\t\t(id, customer_id, number, revision, unique_key)\r\n\tVALUES\r\n\t\t( null, '%d', '%s', '%s', '%s' )",
+    "insert_wo_so_table": "\r\n\tINSERT INTO %s\r\n\t\t(id, wono, sono, quantity, due, unique_key)\r\n\tVALUES\r\n\t\t( null, '%s', '%s', '%d', '%d', '%s' )"
+}<br><br>$ fullhouse: _4LZ0NE98B, 00197296A4, 0000197296, LF990-21993-1, H, SURE-FIRE, L.L.C., 6, 75995, 1467270000, 1500</body>

@@ -1,0 +1,29 @@
+<body style="color:white;background-color:rgb(0, 58, 88)"><pre>$ init() testing_mode = false<br>$ init() Xquery.count = 1<br>$ init() Tquery.count = 0<br>$ init() T_res_arr: null<br>cond(Tquery.count<1), current X_res_array: _1WG138E0O, 000199408A, 0000199408, 1499151600, LF910-494035, A, 968, PO107180, BRAEMAC PTY LTD.<br>res() $t_c_name_lookup by X.unique_key: {
+    "count": 1,
+    "response": [
+        {
+            "CUST_ID": "114",
+            "CUST_NAME": "BRAEMAC PTY LTD.                   ",
+            "ASSY_NO": "LF910-494035",
+            "REVISION": "A"
+        }
+    ]
+}<br>unique_key found -> associated assembly and customer exist<br>$ diff->pendingUpdate: null<br>prep() to Insert into insert_wo_so_table.<br> $ src: {
+    "UNIQ_KEY": "_1WG138E0O",
+    "WO_NO": "000199408A",
+    "SO_NO": "0000199408",
+    "DUE_DATE": 1499151600,
+    "ASSY_NO": "LF910-494035",
+    "REVISION": "A",
+    "QTY": "968",
+    "CUST_PO_NO": "PO107180",
+    "CUST_NAME": "BRAEMAC PTY LTD.",
+    "TIME_STAMP": 1470962072,
+    "STATUS": "1",
+    "Mocha": null,
+    "wo_so_table": "mantis_wo_so_table",
+    "assembly_table": "mantis_assembly_table",
+    "customer_table": "mantis_customer_table",
+    "customer_id": "114",
+    "insert_wo_so_table": "\r\n\tINSERT INTO %s\r\n\t\t(id, work_order, sales_order, purchase_order, quantity, due_date, unique_key)\r\n\tVALUES\r\n\t\t( null, '%s', '%d', '%s', '%d', '%d', '%s' )"
+}<br>$ fullhouse: _1WG138E0O, 000199408A, 199408, LF910-494035, A, BRAEMAC PTY LTD.                   , 114, PO107180, 1499151600, 968</pre></body>

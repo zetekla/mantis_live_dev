@@ -1,0 +1,32 @@
+<body style="color:white;background-color:rgb(0, 58, 88)">$ init() testing_mode = false<br><br>$ init() Xquery.count = 1<br><br>$ init() Tquery.count = 1<br><br>$ init() T_res_arr: {
+    "UNIQ_KEY": "_4LZ0NE98B",
+    "WO_NO": "00197296A4",
+    "SO_NO": "0000197296",
+    "ASSY_NO": "LF990-21993-1",
+    "REVISION": "H",
+    "CUST_NAME": "SURE-FIRE, L.L.C.",
+    "CUST_ID": "6",
+    "CUST_PO_NO": "75995",
+    "DUE_DATE": "1467270000",
+    "QTY": "1500"
+}<br><br>$ diff(): {
+    "CUST_PO_NO": [
+        "76314",
+        "75995"
+    ]
+}<br><br>$ load() must-approved fields: [
+    "SO_NO",
+    "ASSY_NO",
+    "CUST_NAME"
+]<br><br>$ finally, unmatch: 75995<br><br>$ fullhouse: {
+    "UNIQ_KEY": "_4LZ0NE98B",
+    "WO_NO": "00197296A4",
+    "SO_NO": "0000197296",
+    "ASSY_NO": "LF990-21993-1",
+    "REVISION": "H",
+    "CUST_NAME": "SURE-FIRE, L.L.C.",
+    "CUST_ID": "6",
+    "CUST_PO_NO": "76314",
+    "DUE_DATE": "1467270000",
+    "QTY": "1500"
+}</body>

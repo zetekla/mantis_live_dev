@@ -1,0 +1,64 @@
+table, th, td {
+    border: 0.1em ridge black;
+    font-size: 10pt;
+    text-align: center;
+}
+
+.txt-left {
+    display:table-cell;
+    text-align: left;
+    width: 10%;
+}
+
+.txt-right {
+    display:table-cell;
+    text-align: right;
+    width: 10%;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+/* Extract from Bootstrap*/
+
+.col-xs-3 {
+    display:table-cell;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+    width: 25%;
+}
+
+.col-xs-4 {
+    display:table-cell;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+    width: 2%;
+}
+
+.container-fluid {
+    margin-right: auto;
+    margin-left: auto;
+    text-align: center;
+}
+.container-fluid, .txt-right, .txt-left, table, th, td { 
+    font-family: 'Liberation Mono', 'Ubuntu Mono', Consolas, Menlo, Monaco, Roboto, monospace;
+}
+
+.custom_spacer {
+    background-color: #ffffff;
+    color: #000000;
+    height: 1px;
+    font-size: 4pt;
+}
+
+@page { size 8.5in 11in; margin: 15cm }
+@page :left {
+  @bottom-left {
+    content: counter(page);
+  }
+}
+
+div.page, div.printable { page-break-before: always }

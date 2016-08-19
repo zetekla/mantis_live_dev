@@ -1,0 +1,30 @@
+<body style="color:white;background-color:rgb(0, 58, 88)"><pre>$ init() testing_mode = false<br>$ init() Xquery.count = 1<br>$ init() Tquery.count = 0<br>$ init() T_res_arr: null<br>cond(Tquery.count<1), current X_res_array: _4IN0M7309, 000197934A, 0000197934, 1470985200, SLC950-05-0079-01, B, 1000, 70133013, SYS & SOFTWR ENT. DBA:ZODIAC INFLIG<br>res() $t_c_name_lookup by X.unique_key: {
+    "count": 0
+}<br>$t_customer_lookup: {
+    "count": 1,
+    "response": [
+        {
+            "CUST_NAME": "SYS & SOFTWR ENT. DBA:ZODIAC INFLIG",
+            "CUST_ID": "319"
+        }
+    ]
+}<br>@344 $ customer_id: "319"<br> $ src: {
+    "UNIQ_KEY": "_4IN0M7309",
+    "WO_NO": "000197934A",
+    "SO_NO": "0000197934",
+    "DUE_DATE": 1470985200,
+    "ASSY_NO": "SLC950-05-0079-01",
+    "REVISION": "B",
+    "QTY": "1000",
+    "CUST_PO_NO": "70133013",
+    "CUST_NAME": "SYS & SOFTWR ENT. DBA:ZODIAC INFLIG",
+    "TIME_STAMP": 1471041555,
+    "STATUS": "1",
+    "Mocha": null,
+    "wo_so_table": "mantis_wo_so_table",
+    "assembly_table": "mantis_assembly_table",
+    "customer_table": "mantis_customer_table",
+    "customer_id": "319",
+    "insert_assembly_table": "\r\n\tINSERT INTO %s\r\n\t\t(id, customer_id, number, revision, unique_key)\r\n\tVALUES\r\n\t\t( null, '%d', '%s', '%s', '%s' )",
+    "insert_wo_so_table": "\r\n\tINSERT INTO %s\r\n\t\t(id, work_order, sales_order, purchase_order, quantity, due_date, unique_key)\r\n\tVALUES\r\n\t\t( null, '%s', '%d', '%s', '%d', '%d', '%s' )"
+}<br>$ fullhouse: _4IN0M7309, 000197934A, 197934, SLC950-05-0079-01, B, SYS & SOFTWR ENT. DBA:ZODIAC INFLIG, 319, 70133013, 1470985200, 1000</pre></body>

@@ -1,0 +1,143 @@
+<table border='1' style='color:#FFA200'>
+    <thead>
+        <tr>
+            <th colspan="12" class="text-center">Result Table</th>
+        </tr>
+        <tr>
+            <th>Index</th>
+            <th>Mocha</th>
+            <th>Uniq_key</th>
+            <th>Customer_PO</th>
+            <th>Customer_Name</th>
+            <th>Due</th>
+            <th>Work_Order</th>
+            <th>Sale_Order</th>
+            <th>Assembly</th>
+            <th>Revision</th>
+            <th>Quantity</th>
+            <th>Timestamp</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="item in xset">
+            <td>{{$index+1}}</td>
+            <td>{{Mocha.test | boolText}}</td>
+            <td>{{item.key}}</td>
+            <td>{{item.customer_po}}</td>
+            <td>{{item.customer_name}}</td>
+            <td>{{item.due_date | dateFormat}}</td>
+            <td>{{item.wo}}</td>
+            <td>{{item.so}}</td>
+            <td>{{item.assembly}}</td>
+            <td>{{item.revision}}</td>
+            <td>{{item.qty}}</td>
+            <td>{{item.timestamp | dateFormat}}</td>
+        </tr>
+    </tbody>
+</table>
+<br><br>
+<table border='1' style='color:#166CD7' ng-show="!no_insertion" ng-init="no_insertion=true">
+    <thead>
+        <tr>
+            <th colspan="12" class="text-center">current manTis.data Table </th>
+        </tr>
+        <tr>
+            <th>Index</th>
+            <th>Mocha</th>
+            <th>Uniq_key</th>
+            <th>Customer_PO</th>
+            <th>Customer_Name</th>
+            <th>Due</th>
+            <th>Work_Order</th>
+            <th>Sale_Order</th>
+            <th>Assembly</th>
+            <th>Revision</th>
+            <th>Quantity</th>
+            <th>Timestamp</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="item in tset">
+            <td>{{$index+1}}</td>
+            <td>{{Mocha.test | boolText}}</td>
+            <td>{{item.key}}</td>
+            <td>{{item.customer_po}}</td>
+            <td>{{item.customer_name}}</td>
+            <td>{{item.due_date | dateFormat}}</td>
+            <td>{{item.wo}}</td>
+            <td>{{item.so}}</td>
+            <td>{{item.assembly}}</td>
+            <td>{{item.revision}}</td>
+            <td>{{item.qty}}</td>
+            <td>{{item.timestamp | dateFormat}}</td>
+        </tr>
+    </tbody>
+</table>
+<br><br>
+<table border='1'>
+    <thead>
+        <tr>
+            <th colspan='2' class="text-center">Table displaying error</th>
+        </tr>
+    </thead>
+    <thead>
+        <tr>
+            <th>Index</th>
+            <th>Error</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{$index+1}}</td>
+            <td style="color:#166CD7">{{error}}</td>
+        </tr>
+    </tbody>
+</table>
+<br><br>
+<div ng-show="!no_query" ng-init="no_query=true">
+<table border='1'>
+    <thead>
+        <tr>
+            <th colspan='2' class="text-center">pending update query</th>
+        </tr>
+    </thead>
+    <thead>
+        <tr>
+            <th>Index</th>
+            <th>Query</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{$index+1}}</td>
+            <td style="color:#166CD7"><pre>{{stock}}</pre></td>
+        </tr>
+    </tbody>
+</table>
+<br><br>
+</div>
+<div class='row'>
+<div class= 'col-md-8'>
+<table border='1' style='color:#29302B'>
+    <thead>
+        <tr>
+            <th colspan="2" class="text-center">Log</th>
+        </tr>
+        <tr>
+            <th>#</th>
+            <th>Content</th>
+            <!-- <th>Process</th> -->
+            <!-- <th>Remark</th> -->
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="item in shlog">
+            <td>{{$index+1}}</td>
+            <td class="word-wrapper"><pre>{{item.bash}}</pre></td>
+    </tbody>
+</table>
+</div>
+</div>
+<br>
+<br>

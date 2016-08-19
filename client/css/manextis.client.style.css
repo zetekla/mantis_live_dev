@@ -1,0 +1,14 @@
+.so_wo {
+	text-align: center;
+	margin-top: 4em;
+	margin-bottom: 10em;
+}
+.so_wo_field {
+	font-size:4em;
+	width:9em;
+}
+.word-wrapper {
+  width: 8em;
+  word-break: break-all;
+  white-space: normal;
+}

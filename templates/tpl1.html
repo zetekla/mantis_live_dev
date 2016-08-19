@@ -1,0 +1,19 @@
+<div>
+	<h2>{{title}}</h2>
+	<table border="1" style="color:#166CD7">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Skill</th>
+                <th>Appear</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="hero in heroes">
+                <td>{{hero.name}}</td>
+                <td>{{hero.attribute}}</td>
+                <td>{{hero.present}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

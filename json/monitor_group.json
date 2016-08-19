@@ -1,0 +1,5 @@
+[	{ "id": "2,5,7", "username": "ME_Group" },
+	{ "id": "3,4,10", "username": "Group1" },
+	{ "id": "5,8,6", "username": "Group2" },
+	{ "id": "1,7", "username": "Group3" } ]
+	// specify group users by an array of their users' ids.

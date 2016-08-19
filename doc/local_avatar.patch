@@ -1,0 +1,436 @@
+Create folder avatar in mantis root folder.
+
+
+Index: account_page.php
+===================================================================
+--- account_page.php	(revision 5305)
++++ account_page.php	(working copy)
+@@ -48,6 +48,8 @@
+ 	$t_core_path = config_get( 'core_path' );
+ 
+ 	require_once( $t_core_path.'current_user_api.php' );
++	
++	$t_use_gravatar = config_get( 'use_gravatar', false, auth_get_current_user_id(), ALL_PROJECTS );
+ 
+ 	#============ Parameters ============
+ 	# (none)
+@@ -92,7 +94,7 @@
+ <br />
+ <?php } ?>
+ <div align="center">
+-<form method="post" action="account_update.php">
++<form method="post" action="account_update.php" enctype="multipart/form-data">
+ <table class="width75" cellspacing="1">
+ 
+ 	<!-- Headings -->
+@@ -203,9 +205,43 @@
+ 		</td>
+ 	</tr>
+ 
+-	<!-- Access level -->
++	<!-- Avatar -->
+ 	<tr <?php echo helper_alternate_class() ?>>
+ 		<td class="category">
++			<?php echo lang_get( 'use_gravatar' ) ?>:
++		</td>
++		<td>
++			<input type="checkbox" name="use_gravatar" <?php check_checked( $t_use_gravatar, ON ); ?> />
++		</td>
++	</tr>
++	<tr <?php echo helper_alternate_class() ?> >
++		<td class="category">
++			<?php echo lang_get( 'avatar' ) ?>:
++		</td>
++		<td>
++			<?php $t_avatar_exist = print_avatar( $u_id, null, $t_class = "manage_avatar" ); ?>&nbsp;
++			<?php if ($t_avatar_exist and !config_get( 'use_gravatar', false, $u_id, ALL_PROJECTS )) { ?>
++		  	<input class="button-small" type="submit" name="delete_avatar" value="<?php echo lang_get( 'delete_avatar' ) ?>" />
++	  	<?php } ?>
++		</td>
++	</tr>
++<?php 
++	$t_max_file_size = (int) config_get( 'max_avatar_file_size' );
++?>
++	<tr <?php echo helper_alternate_class() ?> >
++		<td class="category">
++			<?php echo lang_get( 'upload_avatar' ) ?>
++			<?php echo '<span class="small">(' . lang_get( 'max_file_size' ) . ': ' . number_format( $t_max_file_size/1000 ) . 'k)</span>'?>
++		</td>
++		<td>
++			<input type="hidden" name="max_file_size" value="<?php echo $t_max_file_size ?>" />
++			<input <?php echo helper_get_tab_index() ?> name="avatar_file" type="file" size="60" />
++		</td>
++	</tr>
++
++	<!-- Access level -->
++	<tr <?php echo helper_alternate_class() ?> >
++		<td class="category">
+ 			<?php echo lang_get( 'access_level' ) ?>
+ 		</td>
+ 		<td>
+Index: account_update.php
+===================================================================
+--- account_update.php	(revision 5305)
++++ account_update.php	(working copy)
+@@ -41,6 +41,7 @@
+ 	$f_realname        	= gpc_get_string( 'realname', '' );
+ 	$f_password        	= gpc_get_string( 'password', '' );
+ 	$f_password_confirm	= gpc_get_string( 'password_confirm', '' );
++	$f_use_gravatar	    = gpc_get_bool( 'use_gravatar' );
+ 
+ 	$f_email = email_append_domain( $f_email );
+ 
+@@ -91,6 +92,34 @@
+ 		}
+ 	}
+ 
++	# avatar
++	$t_username = user_get_field( $t_user_id, 'username' );
++	# store use_avatar in config
++	config_set('use_gravatar', $f_use_gravatar, $t_user_id, ALL_PROJECTS);
++
++	# upload avatar
++	$target_path = config_get('directory_avatar') . '/';
++	$avatar_file_name = $_FILES['avatar_file']['name'];
++	$ext = end(explode('.', $_FILES['avatar_file']['name'])); 
++	$target_file = $target_path . $t_username . '.' . $ext; 
++	move_uploaded_file($_FILES['avatar_file']['tmp_name'], $target_file);
++
++	# delete avatar
++	$f_delete_avatar	= gpc_get_string( 'delete_avatar', '' );
++	if ($f_delete_avatar != '') {
++		$avatar_file = $target_path . '/' . $t_username . '.gif';
++		$fh = fopen($avatar_file, 'w') or die("can't open file");
++		fclose($fh);
++		
++		unlink($avatar_file);
++
++		$avatar_file = $target_path . '/' . $t_username . '.jpg';
++		$fh = fopen($avatar_file, 'w') or die("can't open file");
++		fclose($fh);
++
++		unlink($avatar_file);
++	}
++	
+ 	html_page_top1();
+ 	html_meta_redirect( $t_redirect );
+ 	html_page_top2();
+Index: config_defaults_inc.php
+===================================================================
+--- config_defaults_inc.php	(revision 5305)
++++ config_defaults_inc.php	(working copy)
+@@ -600,6 +600,16 @@
+ 	# Default avatar for users without a gravatar account
+ 	$g_default_avatar = "%path%images/no_avatar.png";
+ 
++	$g_avatar_max_width = 80;
++	$g_avatar_max_height = 80;
++	$g_max_avatar_file_size = 2000000;
++	$g_avatar_files_prefix = 'avatar';
++	# local directory to store avatar
++	$g_directory_avatar = 'avatar';
++
++	# Show avatar in manage_user_list
++	$g_show_avatar_in_manage_user_list = OFF;
++
+ 	# Show release dates on roadmap/changelog
+ 	$g_show_changelog_dates = ON;
+ 	$g_show_roadmap_dates = ON;
+Index: core/print_api.php
+===================================================================
+--- core/print_api.php	(revision 5305)
++++ core/print_api.php	(working copy)
+@@ -137,22 +137,39 @@
+ 
+ 	
+ 	# Print avatar image for the given user ID
+-	function print_avatar( $p_user_id, $p_size = 80 ) {
++	function print_avatar( $p_user_id, $p_size = 80, $t_class = "avatar") {
++		$t_avatar_exist = false;
++		
+ 		if ( !user_exists( $p_user_id ) ) {
+ 			return;
+ 		}
+ 
+ 		if ( access_has_project_level( config_get( 'show_avatar_threshold' ), null, $p_user_id ) ) {
+-			$t_avatar = user_get_avatar( $p_user_id, $p_size );
+-			if ( false !== $t_avatar ) {
++			$t_use_gravatar = config_get( 'use_gravatar', false, $p_user_id, ALL_PROJECTS );
++			if ($t_use_gravatar) {
++				$t_avatar = user_get_avatar( $p_user_id, $p_size );
++				if ( false !== $t_avatar ) {
++					$t_avatar_url = $t_avatar[0];
++					$t_width = $t_avatar[1];
++					$t_height = $t_avatar[2];
++					echo '<a rel="nofollow" href="http://site.gravatar.com">' .
++						'<img class="avatar" src="' . $t_avatar_url . '" alt="User avatar"' .
++						' width="' . $t_width . '" height="' . $t_height . '" /></a>';
++				}
++			} else {
++				$t_avatar = user_get_local_avatar( $p_user_id );
+ 				$t_avatar_url = $t_avatar[0];
+ 				$t_width = $t_avatar[1];
+ 				$t_height = $t_avatar[2];
+-				echo '<a rel="nofollow" href="http://site.gravatar.com">' .
+-					'<img class="avatar" src="' . $t_avatar_url . '" alt="User avatar"' .
+-					' width="' . $t_width . '" height="' . $t_height . '" /></a>';
++				$t_avatar_exist = $t_avatar[3];
++
++				if ($t_avatar_exist) {
++					echo '<img class="' . $t_class. '" src="' . $t_avatar_url . '" alt=""' .
++					' width="' . $t_width . '" height="' . $t_height . '" />';
++				}
+ 			}
+ 		}
++		return $t_avatar_exist;
+ 	}
+ 
+ 
+Index: core/user_api.php
+===================================================================
+--- core/user_api.php	(revision 5305)
++++ core/user_api.php	(working copy)
+@@ -773,7 +773,43 @@
+ 		return $t_result;
+ 	}
+ 
++	/**
++	 * return the local stored user avatar image URL
++	 * @return array|bool an array( URL, width, height ) or false when the given user has no avatar 
++	 */
++	function user_get_local_avatar( $p_user_id ) {
++		$t_avatar_exist = true;
++		$avatar_dir = config_get('directory_avatar');
+ 
++		# default imagesize
++		$t_height = config_get('avatar_max_height');
++		$t_width = config_get('avatar_max_width');
++
++    $t_username = user_get_field($p_user_id, 'username');
++
++		$t_avatar_url = $avatar_dir . '/' . $t_username . '.gif';
++		if (!file_exists($t_avatar_url)) {
++			$t_avatar_url = $avatar_dir . '/' . $t_username . '.jpg';
++			if (!file_exists($t_avatar_url)) {
++				$t_avatar_exist = false; 
++			}
++		}
++
++		if ($t_avatar_exist) {
++			# get image dimensions
++			list($width_orig, $height_orig) = getimagesize($t_avatar_url);
++			$ratio_orig = $width_orig/$height_orig;
++
++			if ($t_width/$t_height > $ratio_orig) {
++				$t_width = $t_height*$ratio_orig;
++			} else {
++				$t_height = $t_width/$ratio_orig;
++			}
++		}      
++
++		return array( $t_avatar_url, $t_width, $t_height, $t_avatar_exist );
++	}
++
+ 	# --------------------
+ 	# return the user's access level
+ 	#  account for private project and the project user lists
+Index: css/default.css
+===================================================================
+--- css/default.css	(revision 5305)
++++ css/default.css	(working copy)
+@@ -161,5 +161,11 @@
+ 	border: 0;
+ }
+ 
++.manage_avatar
++{
++	float: left;
++	border: 2;
++}
++
+ .progress400				{ position: relative; width: 400px; border: 1px solid #d7d7d7; margin-top: 1em; margin-bottom: 1em; padding: 1px; }
+ .progress400 .bar			{ display: block; position: relative; background: #6bba70; text-align: center; font-weight: normal; color: #333; height: 2em; line-height: 2em; }
+Index: lang/strings_english.txt
+===================================================================
+--- lang/strings_english.txt	(revision 5305)
++++ lang/strings_english.txt	(working copy)
+@@ -1528,4 +1528,9 @@
+ #account_view_page.php
+ $s_view_account_title = 'User Information';
+ 
++#avatar
++$s_avatar = 'Avatar';
++$s_use_gravatar = 'Use Gravatar for Avatar';
++$s_upload_avatar = 'Upload Avatar';
++$s_delete_avatar = 'Delete Avatar';
+ ?>
+Index: lang/strings_german.txt
+===================================================================
+--- lang/strings_german.txt	(revision 5305)
++++ lang/strings_german.txt	(working copy)
+@@ -1485,4 +1485,10 @@
+ $s_graph_page = 'Grafische Eintrags-Historie';
+ $s_graph_bug_page_link = 'Grafik';
+ 
++#avatar
++$s_avatar = 'Avatar'; 
++$s_use_gravatar = 'Gravatar für Avatar benutzen';
++$s_upload_avatar = 'Avatar hochladen';
++$s_delete_avatar = 'Avatar löschen';
++
+ ?>
+Index: manage_user_edit_page.php
+===================================================================
+--- manage_user_edit_page.php	(revision 5305)
++++ manage_user_edit_page.php	(working copy)
+@@ -32,6 +32,8 @@
+ 
+ 	$t_user = user_get_row( $f_user_id );
+ 
++	$t_use_gravatar = config_get( 'use_gravatar', false, $f_user_id, ALL_PROJECTS );
++
+ 	html_page_top1();
+ 	html_page_top2();
+ 
+@@ -43,7 +45,7 @@
+ 
+ <!-- USER INFO -->
+ <div align="center">
+-<form method="post" action="manage_user_update.php">
++<form method="post" action="manage_user_update.php" enctype="multipart/form-data">
+ <table class="width75" cellspacing="1">
+ <!-- Title -->
+ <tr>
+@@ -115,6 +117,40 @@
+ 	</td>
+ </tr>
+ 
++<!-- Avatar -->
++<tr <?php echo helper_alternate_class() ?>>
++	<td class="category">
++		<?php echo lang_get( 'use_gravatar' ) ?>:
++	</td>
++	<td>
++		<input type="checkbox" name="use_gravatar" <?php check_checked( $t_use_gravatar, ON ); ?> />
++	</td>
++</tr>
++<tr <?php echo helper_alternate_class() ?>>
++	<td class="category">
++		<?php echo lang_get( 'avatar' ) ?>:
++	</td>
++	<td>
++		<?php $t_avatar_exist = print_avatar( $t_user['id'], "manage_avatar" ); ?>&nbsp;
++		<?php if ($t_avatar_exist and !config_get( 'use_gravatar', false, $f_user_id, ALL_PROJECTS )) { ?>
++		  <input class="button-small" type="submit" name="delete_avatar" value="<?php echo lang_get( 'delete_avatar' ) ?>" />
++	  <?php } ?>
++	</td>
++</tr>
++<?php 
++	$t_max_file_size = (int) config_get( 'max_avatar_file_size' );
++?>
++<tr <?php echo helper_alternate_class() ?>>
++	<td class="category">
++		<?php echo lang_get( 'upload_avatar' ) ?>
++		<?php echo '<span class="small">(' . lang_get( 'max_file_size' ) . ': ' . number_format( $t_max_file_size/1000 ) . 'k)</span>'?>
++	</td>
++	<td>
++		<input type="hidden" name="max_file_size" value="<?php echo $t_max_file_size ?>" />
++		<input <?php echo helper_get_tab_index() ?> name="avatar_file" type="file" size="60" />
++	</td>
++</tr>
++
+ <!-- Submit Button -->
+ <tr>
+ 	<td colspan="2" class="center">
+Index: manage_user_page.php
+===================================================================
+--- manage_user_page.php	(revision 5305)
++++ manage_user_page.php	(working copy)
+@@ -275,6 +275,10 @@
+ 		<?php print_manage_user_sort_link(  'manage_user_page.php', lang_get( 'last_visit' ), 'last_visit', $c_dir, $c_sort, $c_hide, $c_filter ) ?>
+ 		<?php print_sort_icon( $c_dir, $c_sort, 'last_visit' ) ?>
+ 	</td>
+//***** this section was not added in 1.2.19 due to code difference.
++	<td>
++		<?php print_manage_user_sort_link(  'manage_user_page.php', lang_get( 'avatar' ), 'avatar', $c_dir, $c_sort, $c_hide ) ?>
++		<?php print_sort_icon( $c_dir, $c_sort, 'avatar' ) ?>
++	</td>
+//**************************************************************
+ </tr>
+ <?php
+ 	$t_date_format = config_get( 'normal_date_format' );
+	
+@@ -266 where $t_columns = array.  + 'avatar'  // avatar is added to the array and the new function builds all the user columns through a loop.	
+@@ -290,6 +294,10 @@
+ 		if( !isset( $t_access_level[$u_access_level] ) ) {
+ 			$t_access_level[$u_access_level] = get_enum_element( 'access_levels', $u_access_level );
+ 		}
++		
++		# has avatar
++		$t_avatar = user_get_local_avatar( $u_id );
++		$has_avatar = $t_avatar[3];		
+ ?>
+ <tr <?php echo helper_alternate_class( $i ) ?>>
+ 	<td>
+@@ -310,6 +318,14 @@
+         </td>
+ 	<td><?php echo $u_date_created ?></td>
+ 	<td><?php echo $u_last_visit ?></td>
++	<td><?php 
++		if (config_get("show_avatar_in_manage_user_list")) {
++			print_avatar( $u_id , null, $t_class = "manage_avatar");
++		} else {
++			echo trans_bool( $has_avatar ); 
++		}
++		?>
++	</td>	
+ </tr>
+ <?php
+ 	}  # end for
+Index: manage_user_update.php
+===================================================================
+--- manage_user_update.php	(revision 5305)
++++ manage_user_update.php	(working copy)
+@@ -40,7 +40,8 @@
+ 	$f_realname		= gpc_get_string( 'realname', '' );
+ 	$f_access_level	= gpc_get_int( 'access_level' );
+ 	$f_user_id		= gpc_get_int( 'user_id' );
+-
++	$f_use_gravatar	= gpc_get_bool( 'use_gravatar' );
++	
+ 	user_ensure_exists( $f_user_id );
+ 
+ 	$f_email	= trim( $f_email );
+@@ -107,6 +108,32 @@
+ 	}
+ 
+ 	$result = db_query_bound( $query, $query_params );
++	
++	# store use_avatar in config
++	config_set('use_gravatar', $f_use_gravatar, $c_user_id, ALL_PROJECTS);
++
++	# upload avatar
++	$target_path = config_get('directory_avatar') . '/';
++	$ext = end(explode('.', $_FILES['avatar_file']['name'])); 
++	$target_file = $target_path . $c_username . '.' . $ext; 
++	move_uploaded_file($_FILES['avatar_file']['tmp_name'], $target_file);
++
++	# delete avatar
++	$f_delete_avatar	= gpc_get_string( 'delete_avatar', '' );
++	if ($f_delete_avatar != '') {
++		$avatar_file = $target_path . '/' . $c_username . '.gif';
++		$fh = fopen($avatar_file, 'w') or die("can't open file");
++		fclose($fh);
++
++		unlink($avatar_file);
++
++		$avatar_file = $target_path . '/' . $c_username . '.jpg';
++		$fh = fopen($avatar_file, 'w') or die("can't open file");
++		fclose($fh);
++
++		unlink($avatar_file);
++	}
++	
+ 	$t_redirect_url = 'manage_user_edit_page.php?user_id=' . $c_user_id;
+ ?>
+ <?php html_page_top1() ?>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>GUI</title>
+    <link href="client/css/bootstrap.css" rel="stylesheet" />
+    <link href="client/css/manextis.client.style.css" rel="stylesheet" />
+</head>
+<body ng-app="myApp">
+<div class="wrapper container table-container" ng-controller="myController">
+    <div class="so_wo">
+        <input id="field10" class="any_field" type="text" size="100" name="any_name" ng-model='field10_model' required/>
+        <input type="datetime-local" ng-model="entry.date_received" datetime="MM/dd/yyyy hh:mm a" date-parser="MM/dd/yyyy hh:mm a" class="screen"/><br>
+        currentTime :  {{Time}}<br>
+        formattedTime: {{formattedTime | dateFormat}}<br><br>
+        <label> Mocha test<input type="checkbox" ng-model='mochaBox' ng-init="mochaBox=false"></label>
+        <input id="field7" class="so_wo_field" type="text" size="100" name="sales_order" ng-model='query' required/>
+        <span ng-show="query">Search for "{{query}}"</span>
+        <span ng-show="!query">Search...</span>
+
+        <br><br>
+        <button ng-click="truncate()">db.truncate() {{truncated}}</button>
+        <br><br>
+        dirURL : {{dirURL}} <br><br>
+        Search : {{currSearch}} <br><br>
+        Result:
+        <result-fetch ng-show="!no_result" ng-init="no_result=true"></result-fetch>
+        <button ng-click="sampleToggle()">Sample dataDump</button>
+    </div>
+
+    <div ng-hide="theInvisible">
+        <table border="1" style="color:#166CD7">
+            <thead>
+                <tr>
+                    <th>Index</th>
+                    <th>Uniq_key</th>
+                    <th>Customer_PO</th>
+                    <th>Customer_Name</th>
+                    <th>Due</th>
+                    <th>Work_Order</th>
+                    <th>Sale_Order</th>
+                    <th>Assembly</th>
+                    <th>Revision</th>
+                    <th>Quantity</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="order in orders">
+                    <td>{{$index+1}}</td>
+                    <td>{{order.key}}</td>
+                    <td>{{order.customer_po}}</td>
+                    <td>{{order.customer_name}}</td>
+                    <td>{{order.due_date}}</td>
+                    <td>{{order.wo}}</td>
+                    <td>{{order.so}}</td>
+                    <td>{{order.assembly}}</td>
+                    <td>{{order.revision}}</td>
+                    <td>{{order.qty}}</td>
+                    <td>{{order.timestamp}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <table>
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="customer in customers">
+                    <td>{{$index+1}}</td>
+                    <td>{{customer.name}}</td>
+                    <td>{{customer.status}}</td>
+                    <td>{{customer.timestamp}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <br/>
+        <!--{{custs}}-->
+        <br/>
+        <h3>Mutants and Marvel Heroes</h3>
+        <br/>
+        <br/>
+        <!--{{mutants}}-->
+        <br/>
+        <br/>
+        Name inside parent scope is: <strong>{{name}}</strong>
+        {{marvels}}
+        <div class="directive" my-directive
+            name="{{name}}"
+        ></div>
+        <passing-heroes marvels='marvels' pref='2' board="'heroes list'"></passing-heroes>
+        <table border="1" style="color:#166CD7">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Skill</th>
+                    <th>Appear</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="marvel in marvels">
+                    <td>{{$index+1}}</td>
+                    <td>{{marvel.name}}</td>
+                    <td>{{marvel.attribute}}</td>
+                    <td>{{marvel.present}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div ng-repeat='marvel in marvels'>
+            <passing-profile id='$index+1' marvel='marvel' title="'Hero indexed Card'">
+            </passing-profile>
+        </div>
+    </div>
+</div>
+<script src="client/js/jquery.js"></script>
+<script src="client/js/angular.js"></script>
+<script src="client/js/moment.min.js"></script>
+<script src="client/js/angular-momentjs.min.js"></script>
+<script src="client/js/manextis.client.filters.js"></script>
+<script src="client/js/manextis.client.directives.js"></script>
+<script src="client/js/manextis.client.controller.js"></script>
+</body>
+</html>
