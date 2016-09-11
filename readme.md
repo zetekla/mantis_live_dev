@@ -37,7 +37,8 @@ the dev contains pkgs like this
 
 ## implementation of rsa for ease of use
 
-Ground for this implementation
+Ground for this implementation.
+
 Wanted to do all rsa to Git for 130, dev/mantislive, the production mantislive (root/mantislive) months ago but was unfamiliar with Windows Server authentication and struggling with being unable to execute commands through Git Shell. Now command lines all work.
 
 I have assign `chmod a+x for rsa` file within the dev/mantislive repo, so now after you write some new code and feel certain that a functionality is achieved, you can open GitBash and do the following:

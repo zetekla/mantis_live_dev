@@ -429,13 +429,13 @@ function user_get_logged_in_user_ids( $p_session_duration_in_minutes ) {
 	$t_user_table = db_get_table( 'mantis_user_table' );
 
 	# Execute query
-	$query = 'SELECT id FROM ' . $t_user_table . ' WHERE last_visit > ' . db_param();
-	$result = db_query_bound( $query, array( $c_last_timestamp_threshold ), 1 );
-
+	$query = 'SELECT realname FROM ' . $t_user_table . ' WHERE last_visit > ' . db_param();
+	$result = db_query_bound( $query, array( $t_last_timestamp_threshold ));
 	# Get the list of connected users
 	$t_users_connected = array();
+
 	while( $row = db_fetch_array( $result ) ) {
-		$t_users_connected[] = $row['id'];
+		$t_users_connected[] = $row['realname'];
 	}
 
 	return $t_users_connected;

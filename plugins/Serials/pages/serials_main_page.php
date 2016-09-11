@@ -33,18 +33,40 @@ html_page_top2();
 <section id="ui_data"></section>
 <form id="myform" name="form" ng-app="myApp" >
 <div class="container col-sm-12">
-	<div class="pull-right">
-		<button type="button" id="html-painike" class="btn btn-sm btn-primary print"><span class="glyphicon glyphicon-fullscreen"></span>
-			<b>HTML</b></button>
-		<button type="button" id="reset" class="btn btn-sm btn-secondary reset"><span class="glyphicon glyphicon-refresh"></span>
+	<div class="pull-right" style="position:absolute; background: white; right: 10px;  z-index: 1000">
+			<button type="button" id="reset" class="btn btn-secondary reset "><span class="glyphicon glyphicon-refresh"></span>
 			<b>Reset</b></button>
 	<?php
 		if ( access_has_project_level( plugin_config_get('format_threshold') ) ) {
-		    print_bracket_link( $g_format_page, plugin_lang_get( 'format_title') );
+	?>
+	<button id="format_config" class="btn btn-primary pull-right" type="button" ng-model="collapsed" ng-click="collapsed=!collapsed"><span class="glyphicon glyphicon-qrcode"></span>
+	  Format Config
+	</button>
+	<br>
+	<div id="panel" ng-show="collapsed" class="panel panel-default">
+		<div class="panel-body">
+			<span class="pull-left"><b>Unique Key</b></span>
+			<input class="form-control pull-right" id="key" type="text" size="25" name="unique_key" ng-model='unique_key'/><br>
+			<span class="pull-left"><b>Format Example</b></span>
+			<input class="form-control pull-right" id="format_example"  name="format_example" type="text" size="25" ng-model='format_example' ng-pattern='format'/><br>
+			<span class="pull-left"><b>Format Code</b></span>
+			<input class="form-control pull-right" id="format" type="text" size="25" ng-model='format'/><br>
+			<br>
+			<div class="pull-left"> 
+				<span class="pull-left alert alert-success glyphicon glyphicon-ok" ng-show="form.format_example.$valid && format_example && format"> - FORMAT SUCCESSFULLY MATCHES EXAMPLE</span>
+				<span class="pull-left alert alert-danger glyphicon glyphicon-remove" ng-show="!form.format_example.$valid && !format_example && format"> - FORMAT DOES NOT MATCH THE PROVIDED EXAMPLE!</span>
+			</div><br>
+			<div class="pull-right">	
+			<button id="format_update" type="button" class="btn btn-primary"> Update format</button>
+			</div>
+		</div>
+	</div>
+	<?php		
+		}else{
 	?>
 	<br>
-	<input class="pull-right" id="key" type="text" size="15" name="unique_key" ng-model='unique_key'/>
-	<?php		
+	<input class="pull-right hidden" id="key" type="text" size="15" name="unique_key" ng-model='unique_key'/>
+	<?php
 		}
 		/*$t_now = date( config_get( 'complete_date_format' ) );
 		echo "<span id='time'>". $t_now ."</span>";*/
@@ -53,7 +75,7 @@ html_page_top2();
 	<div id="top-function-wrapper">
 		<button type="button" id="search" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span>
 			<b>Search</b></button>
-		<button type="button" id="tulostaa-painike" class="btn btn-primary print"><span class="glyphicon glyphicon-print"></span>
+		<button type="button" id="html-painike" class="btn btn-primary print"><span class="glyphicon glyphicon-print"></span>
 			<b>Print</b></button>
 		<button type="button" id="cofc" class="btn btn-primary"><span class="glyphicon glyphicon-list-alt"></span>
 			<b>C of C</b></button>
@@ -63,7 +85,7 @@ html_page_top2();
 			<b>Work Order Number:</b>
 			<div class="typeahead-container">
 				<div >
-					<input id="field0" class="form-control" type="text" name="work_order" size="32" maxlength="32" value="" ng-model='query'></input>
+					<input id="field0" class="form-control" type="text" name="work_order" size="32" maxlength="32" value="" placeholder="Example 123456A" ng-model='query'></input>
 					<span id="msg" ng-show="query" ng-cloak>
 						<div class="alert alert-warning" ng-show="error" ng-cloak>
 							<strong>No Results Found for {{query}}!</strong><br>Please Try Again.

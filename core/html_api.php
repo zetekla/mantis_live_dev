@@ -212,7 +212,11 @@ function html_page_top2() {
 
 	if( auth_is_user_authenticated() ) {
 		html_login_info();
-
+	if (get_enum_element( 'access_levels', current_user_get_access_level() ) == "administrator" ){
+	$online_users = user_get_logged_in_user_ids(5);
+	echo 'Users Online: ';
+	echo json_encode($online_users);
+	}
 		if( ON == config_get( 'show_project_menu_bar' ) ) {
 			print_project_menu_bar();
 			echo '<br />';

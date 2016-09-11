@@ -1,6 +1,7 @@
 <?php
 # MantisBT - a php based bugtracking system
 
+
 # MantisBT is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 2 of the License, or
@@ -83,6 +84,7 @@ event_declare_many( array(
 	# Bug view events
 	'EVENT_VIEW_BUG_DETAILS' => EVENT_TYPE_EXECUTE,
 	'EVENT_VIEW_BUG_EXTRA' => EVENT_TYPE_EXECUTE,
+	'EVENT_VIEW_BUG_ATTACHMENT' => EVENT_TYPE_OUTPUT,
 	'EVENT_VIEW_BUGNOTES_START' => EVENT_TYPE_EXECUTE,
 	'EVENT_VIEW_BUGNOTE' => EVENT_TYPE_EXECUTE,
 	'EVENT_VIEW_BUGNOTES_END' => EVENT_TYPE_EXECUTE,

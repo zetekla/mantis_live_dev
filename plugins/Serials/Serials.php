@@ -4,7 +4,7 @@ class SerialsPlugin extends MantisPlugin {
         $this->name 		= 'Serials';    # Proper name of plugin
         $this->description 	= 'Serial number entry form for list generation and verification.';    # Short description of the plugin
         $this->page 		= 'config';           # Default plugin page
-        $this->version 		= '1.2';
+        $this->version 		= '1.3';
 		    $this->requires    = array('MantisCore' => '1.2.0');
         $this->author 		= 'Phuc Tran & Khin Tram';         # Author/team name
         $this->contact 		= 'PhucTran@eminc.com / Ktram@eminc.com';        # Author/team e-mail address
@@ -56,6 +56,10 @@ class SerialsPlugin extends MantisPlugin {
         sales_order		C(250)	DEFAULT \" '' \"
         " )
       ),
+	  array( 'AddColumnSQL', array( plugin_table( 'serial' ), "
+		unique_key		C(250)
+		")
+	  ),
     );
   }
 }

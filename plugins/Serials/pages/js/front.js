@@ -21,10 +21,6 @@ $(document).ready(function() {
     }
   });
 
-  $("#tulostaa-painike").on({
-    click: print_dialog
-  });
-
   $("#html-painike").on({
     click: print_html
   });
@@ -48,6 +44,20 @@ $(document).ready(function() {
 		  cofc();
 		}
 	});
+	
+	$("#format_config").on({
+		click: function(e){
+		  e.preventDefault();
+		  format_config($("#key").val());
+		}
+	});	
+	
+	$("#format_update").on({
+		click: function(e){
+		  e.preventDefault();
+		  format_update();
+		}
+	});	
 
   $("#field1,#field2,#field3,#field7")
   .on('keyup', function(e){
@@ -58,7 +68,7 @@ $(document).ready(function() {
       search_process();
     }
   });
-
+  
   $("#scan_result").on({
     mouseenter: function(){
         $(this).css("background-color", "lightgray");

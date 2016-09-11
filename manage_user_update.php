@@ -39,6 +39,7 @@
 	$f_realname		= gpc_get_string( 'realname', '' );
 	$f_access_level	= gpc_get_int( 'access_level' );
 	$f_user_id		= gpc_get_int( 'user_id' );
+	$f_pass 		= gpc_get_string('password');
 	$f_use_gravatar	= gpc_get_bool( 'use_gravatar' );
 	
 	if ( config_get( 'enable_email_notification' ) == ON ) {
@@ -145,6 +146,8 @@
 	}
 
 	$result = db_query_bound( $query, $query_params );
+	
+	if ($f_pass) user_set_password($f_user_id, $f_pass);
 	
 	# store use_avatar in config
 	config_set('use_gravatar', $f_use_gravatar, $c_user_id, ALL_PROJECTS);

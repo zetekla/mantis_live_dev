@@ -1688,135 +1688,149 @@ function get_dropdown( $p_control_array, $p_control_name, $p_match = '', $p_add_
 	$t_info .= "</select>\n";
 	return $t_info;
 }
-
-# List the attachments belonging to the specified bug.  This is used from within
-# bug_view_inc.php
+/**
+ * Prints the list of visible attachments belonging to a given bug.
+ * @param integer $p_bug_id ID of the bug to print attachments list for.
+ * @return void
+ */
 function print_bug_attachments_list( $p_bug_id ) {
 	$t_attachments = file_get_visible_attachments( $p_bug_id );
-	$t_attachments_count = count( $t_attachments );
-
-	$i = 0;
-	$image_previewed = false;
-
+	echo "\n<ul>";
 	foreach ( $t_attachments as $t_attachment ) {
-		$t_file_display_name = string_display_line( $t_attachment['display_name'] );
-		$t_filesize = number_format( $t_attachment['size'] );
-		$t_date_added = date( config_get( 'normal_date_format' ), $t_attachment['date_added'] );
-
-		if ( $image_previewed ) {
-			$image_previewed = false;
-			echo '<br />';
-		}
-
-
-		if ( $t_attachment['can_download'] ) {
-			$t_href_start = '<a href="' . string_attribute( $t_attachment['download_url'] ) . '">';
-			$t_href_end = '</a>';
-
-			$t_href_clicket = " [<a href=\"file_download.php?file_id={$t_attachment['id']}&amp;type=bug\" target=\"_blank\">^</a>]";
-		} else {
-			$t_href_start = '';
-			$t_href_end = '';
-			$t_href_clicket = '';
-		}
-
-		if ( !$t_attachment['exists'] ) {
-			print_file_icon( $t_file_display_name );
-			echo '&#160;<span class="strike">' . $t_file_display_name . '</span>' . lang_get( 'word_separator' ) . '(' . lang_get( 'attachment_missing' ) . ')';
-		} else {
-			echo $t_href_start;
-			print_file_icon( $t_file_display_name );
-			echo $t_href_end . '&#160;' . $t_href_start . $t_file_display_name . $t_href_end . $t_href_clicket . ' (' . $t_filesize . ' ' . lang_get( 'bytes' ) . ') ' . '<span class="italic">' . $t_date_added . '</span>';
-		}
-
-		if ( $t_attachment['can_delete'] ) {
-			echo '&#160;[';
-			print_link( 'bug_file_delete.php?file_id=' . $t_attachment['id'] . form_security_param( 'bug_file_delete' ), lang_get( 'delete_link' ), false, 'small' );
-			echo ']';
-		}
-
-		if ( $t_attachment['exists'] ) {
-			if ( ( FTP == config_get( 'file_upload_method' ) ) && $t_attachment['exists'] ) {
-				echo ' (' . lang_get( 'cached' ) . ')';
-			}
-
-			if ( $t_attachment['preview'] && ( $t_attachment['type'] == 'text' ) ) {
-				 $c_id = db_prepare_int( $t_attachment['id'] );
-				 $t_bug_file_table = db_get_table( 'mantis_bug_file_table' );
-
-				echo "<script type=\"text/javascript\" language=\"JavaScript\">
-<!--
-function swap_content( span ) {
-displayType = ( document.getElementById( span ).style.display == 'none' ) ? '' : 'none';
-document.getElementById( span ).style.display = displayType;
+		echo "\n<li>";
+		print_bug_attachment( $t_attachment );
+		echo "\n</li>";
+	}
+	echo "\n</ul>";
 }
 
- -->
- </script>";
-				echo " <span id=\"hideSection_$c_id\">[<a class=\"small\" href='#' id='attmlink_" . $c_id . "' onclick='swap_content(\"hideSection_" . $c_id . "\");swap_content(\"showSection_" . $c_id . "\");return false;'>" . lang_get( 'show_content' ) . "</a>]</span>";
-				echo " <span style='display:none' id=\"showSection_$c_id\">[<a class=\"small\" href='#' id='attmlink_" . $c_id . "' onclick='swap_content(\"hideSection_" . $c_id . "\");swap_content(\"showSection_" . $c_id . "\");return false;'>" . lang_get( 'hide_content' ) . "</a>]";
-
-				echo "<pre>";
-
-				/** @todo Refactor into a method that gets contents for download / preview. */
-				switch( config_get( 'file_upload_method' ) ) {
-					case DISK:
-						if ( $t_attachment['exists'] ) {
-							$v_content = file_get_contents( $t_attachment['diskfile'] );
-						}
-						break;
-					case FTP:
-						if( file_exists( $t_attachment['exists'] ) ) {
-							file_get_contents( $t_attachment['diskfile'] );
-						} else {
-							$ftp = file_ftp_connect();
-							file_ftp_get( $ftp, $t_attachment['diskfile'], $t_attachment['diskfile'] );
-							file_ftp_disconnect( $ftp );
-							$v_content = file_get_contents( $t_attachment['diskfile'] );
-						}
-						break;
-					default:
-						$query = "SELECT *
-	                  					FROM $t_bug_file_table
-				            			WHERE id=" . db_param();
-						$result = db_query_bound( $query, Array( $c_id ) );
-						$row = db_fetch_array( $result );
-						$v_content = $row['content'];
-				}
-
-				echo htmlspecialchars( $v_content );
-				echo "</pre></span>\n";
-			}
-
-
-			if ( $t_attachment['can_download'] && $t_attachment['preview'] && $t_attachment['type'] == 'image' ) {
-				$t_preview_style = 'border: 0;';
-				$t_max_width = config_get( 'preview_max_width' );
-				if( $t_max_width > 0 ) {
-					$t_preview_style .= ' max-width:' . $t_max_width . 'px;';
-				}
-
-				$t_max_height = config_get( 'preview_max_height' );
-				if( $t_max_height > 0 ) {
-					$t_preview_style .= ' max-height:' . $t_max_height . 'px;';
-				}
-
-				$t_preview_style = 'style="' . $t_preview_style . '"';
-				$t_title = file_get_field( $t_attachment['id'], 'title' );
-
-				$t_image_url = $t_attachment['download_url'] . '&amp;show_inline=1' . form_security_param( 'file_show_inline' );
-
-				echo "\n<br />$t_href_start<img id=\"$t_title\" $t_preview_style src=\"$t_image_url\" />$t_href_end";
-				$image_previewed = true;
-			}
+/**
+ * Prints information about a single attachment including download link, file
+ * size, upload timestamp and an expandable preview for text and image file
+ * types.
+ * @param array $p_attachment An attachment array from within the array returned by the file_get_visible_attachments() function.
+ * @return void
+ */
+function print_bug_attachment( array $p_attachment ) {
+	$t_show_attachment_preview = $p_attachment['preview'] && $p_attachment['exists'] && ( $p_attachment['type'] == 'text' || $p_attachment['type'] == 'image' );
+	if( $t_show_attachment_preview ) {
+		$t_collapse_id = 'attachment_preview_' . $p_attachment['id'];
+		global $g_collapse_cache_token;
+		$g_collapse_cache_token[$t_collapse_id] = false;
+		collapse_open( $t_collapse_id );
+	}
+	print_bug_attachment_header( $p_attachment );
+	if( $t_show_attachment_preview ) {
+		echo lang_get( 'word_separator' );
+		collapse_icon( $t_collapse_id );
+		if( $p_attachment['type'] == 'text' ) {
+			print_bug_attachment_preview_text( $p_attachment );
+		} else if( $p_attachment['type'] === 'image' ) {
+			print_bug_attachment_preview_image( $p_attachment );
 		}
-
-		if ( $i != ( $t_attachments_count - 1 ) ) {
-			echo "<br />\n";
-			$i++;
-		}
+		collapse_closed( $t_collapse_id );
+		print_bug_attachment_header( $p_attachment );
+		echo lang_get( 'word_separator' );
+		collapse_icon( $t_collapse_id );
+		collapse_end( $t_collapse_id );
 	}
 }
+
+/**
+ * Prints a single textual line of information about an attachment including download link, file
+ * size and upload timestamp.
+ * @param array $p_attachment An attachment array from within the array returned by the file_get_visible_attachments() function.
+ * @return void
+ */
+function print_bug_attachment_header( array $p_attachment ) {
+	echo "\n";
+	if( $p_attachment['exists'] ) {
+		if( $p_attachment['can_download'] ) {
+			echo '<a href="' . string_attribute( $p_attachment['download_url'] ) . '">';
+		}
+		print_file_icon( $p_attachment['display_name'] );
+		if( $p_attachment['can_download'] ) {
+			echo '</a>';
+		}
+		echo lang_get( 'word_separator' );
+		if( $p_attachment['can_download'] ) {
+			echo '<a href="' . string_attribute( $p_attachment['download_url'] ) . '">';
+		}
+		echo string_display_line( $p_attachment['display_name'] );
+		if( $p_attachment['can_download'] ) {
+			echo '</a>';
+		}
+		echo lang_get( 'word_separator' ) . '(' . number_format( $p_attachment['size'] ) . lang_get( 'word_separator' ) . lang_get( 'bytes' ) . ')';
+		echo lang_get( 'word_separator' ) . '<span class="italic">' . date( config_get( 'normal_date_format' ), $p_attachment['date_added'] ) . '</span>';
+		event_signal( 'EVENT_VIEW_BUG_ATTACHMENT', array( $p_attachment ) );
+	} else {
+		print_file_icon( $p_attachment['display_name'] );
+		echo lang_get( 'word_separator' ) . '<span class="strike">' . string_display_line( $p_attachment['display_name'] ) . '</span>' . lang_get( 'word_separator' ) . '(' . lang_get( 'attachment_missing' ) . ')';
+	}
+
+	if( $p_attachment['can_delete'] ) {
+		echo lang_get( 'word_separator' ) . '[';
+		print_link( 'bug_file_delete.php?file_id=' . $p_attachment['id'] . form_security_param( 'bug_file_delete' ), lang_get( 'delete_link' ), false, 'small' );
+		echo ']';
+	}
+}
+
+/**
+ * Prints the preview of a text file attachment.
+ * @param array $p_attachment An attachment array from within the array returned by the file_get_visible_attachments() function.
+ * @return void
+ */
+function print_bug_attachment_preview_text( array $p_attachment ) {
+	if( !$p_attachment['exists'] ) {
+		return;
+	}
+	echo "\n<pre class=\"bug-attachment-preview-text\">";
+	switch( config_get( 'file_upload_method' ) ) {
+		case DISK:
+			if( file_exists( $p_attachment['diskfile'] ) ) {
+				$t_content = file_get_contents( $p_attachment['diskfile'] );
+			}
+			break;
+		case DATABASE:
+			$t_query = 'SELECT * FROM {bug_file} WHERE id=' . db_param();
+			$t_result = db_query( $t_query, array( (int)$p_attachment['id'] ) );
+			$t_row = db_fetch_array( $t_result );
+			$t_content = $t_row['content'];
+			break;
+		default:
+			trigger_error( ERROR_GENERIC, ERROR );
+	}
+	echo htmlspecialchars( $t_content );
+	echo '</pre>';
+}
+
+/**
+ * Prints the preview of an image file attachment.
+ * @param array $p_attachment An attachment array from within the array returned by the file_get_visible_attachments() function.
+ * @return void
+ */
+function print_bug_attachment_preview_image( array $p_attachment ) {
+	$t_preview_style = 'border: 0;';
+	$t_max_width = config_get( 'preview_max_width' );
+	if( $t_max_width > 0 ) {
+		$t_preview_style .= ' max-width:' . $t_max_width . 'px;';
+	}
+
+	$t_max_height = config_get( 'preview_max_height' );
+	if( $t_max_height > 0 ) {
+		$t_preview_style .= ' max-height:' . $t_max_height . 'px;';
+	}
+
+	$t_title = file_get_field( $p_attachment['id'], 'title' );
+	$t_image_url = $p_attachment['download_url'] . '&show_inline=1' . form_security_param( 'file_show_inline' );
+
+	echo "\n<div class=\"bug-attachment-preview-image\">";
+	echo '<a href="' . string_attribute( $p_attachment['download_url'] ) . '">';
+	echo '<img src="' . string_attribute( $t_image_url ) . '" id="' . string_attribute( $t_title ) . '" style="' . string_attribute( $t_preview_style ) . '" />';
+	echo '</a></div>';
+}
+
+
 
 # --------------------
 # Print the option list for timezones

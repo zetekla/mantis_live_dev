@@ -98,6 +98,8 @@ function resultFetch($location, $http){
 			            try {
 			            	if (!jobj) throw new Error("Undefined object, response: ");
 			            	scope.no_result = Object.keys(jobj).length === 0 || jobj == null;
+
+
 			            	if (scope.no_result) throw new Error("Unable to map the result object, response: ");
 				            jobj.map(function(d,idx){
 				                o[idx] = {
@@ -115,7 +117,7 @@ function resultFetch($location, $http){
 				            });
 
 				            if (fullhouse){
-				            	// console.log(fullhouse);
+				            	//console.log('here fullHouse', fullhouse);
 				            	if(!(fullhouse instanceof Array)) fullhouse = [fullhouse];
 					            fullhouse.map(function(d,idx){
 					                ob[idx] = {
@@ -132,8 +134,11 @@ function resultFetch($location, $http){
 					                };
 					                console.log('client.Fullhouse ', ob[0]);
 									scope.assembly = ob[0].assembly;
+									$('input[name="custom_field_1"]').val(ob[0].assembly);
 									scope.revision = ob[0].revision;
+									$('input[name="custom_field_2"]').val(ob[0].revision);
 									scope.sales_order = ob[0].so;
+									$('input[name="custom_field_3"]').val(ob[0].so);
 									scope.customer = ob[0].customer_name;
 									scope.purchase_order = ob[0].customer_po;
 									scope.quantity = ob[0].qty;
@@ -178,8 +183,6 @@ function resultFetch($location, $http){
 					scope.due_date = null;
 					scope.unique_key = null;
 					$("#msg").show();
-					
-					
 				}
     		});
 		},
@@ -212,7 +215,6 @@ function passingProfile(){
 		}
 	}
 }
-
 /*
 restrict: 'E', apply to element which <passing-profile> is an element
 restrict: 'A', apply to attribute which <div passing-profile></div> or <div data-passing-profile></div>, passing-profile is an attribute role here, same as data=marvel, data is an attribute.

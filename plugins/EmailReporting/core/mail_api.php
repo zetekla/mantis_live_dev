@@ -634,7 +634,9 @@ class ERP_mailbox_api
 		$t_email[ 'Message-ID' ] = $t_mp->messageid();
 		$t_email[ 'References' ] = $t_mp->references();
 		$t_email[ 'In-Reply-To' ] = $t_mp->inreplyto();
-		$t_email[ 'Thread-Index'] = $t_mp->threadindex();
+		$t_email[ 'Thread-Index' ] = $t_mp->threadindex();
+		
+		$t_email[ 'Replies' ] = build_reply( trim( $t_mp->body() ) );
 
 		$this->show_memory_usage( 'Finished Mail Parser' );
 

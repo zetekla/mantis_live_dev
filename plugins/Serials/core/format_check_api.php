@@ -130,3 +130,25 @@
 			return db_query_bound( $query );
 		}
 	}
+	
+	function update_format(
+		$p_assembly_id,
+		$p_format,
+		$p_format_example
+	){
+		$p_format_exist = is_format_exist ( $p_assembly_id );
+		global $g_mantis_serials_format;
+		if ( !$p_format_exist ){
+			$query = "INSERT
+					INTO $g_mantis_serials_format
+					( format_id, assembly_id, format, format_example )
+					VALUES
+					( null, '$p_assembly_id', '$p_format', '$p_format_example' )";
+	    	return db_query_bound( $query );
+		} else {
+			$query = "UPDATE $g_mantis_serials_format
+					SET format='$p_format', format_example='$p_format_example'
+					WHERE assembly_id='$p_assembly_id'";
+			return db_query_bound( $query );
+		}
+	}
