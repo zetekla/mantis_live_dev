@@ -144,7 +144,7 @@ var search_process = function(){
           output1 += '<div class="pull-left" style="min-width: 150px;padding:0px 25px"><b>' + String(i) + '.</b> <span id="klikaa_serial">' + elem + '</span></div>';
         });
         $("#log-wrapper")
-          .append( output1 + "<br/>")
+          .append( output1)
           .addClass("bg-success")
           .css({  "max-height":"300px", "overflow-y" : "auto" })
           .animate({"scrollTop": $("#log-wrapper")[0].scrollHeight}, "slow");
@@ -162,6 +162,8 @@ String.prototype.re = function(pattern){
 var klikaaMethod = function(v){
 	console.log(v.innerHTML);
 	$("#session_id").val(v.innerHTML);
+	document.getElementById('session_id').disabled=true;
+	search_process();
 }
 
 var scan_process = function(v){
