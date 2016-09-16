@@ -101,4 +101,9 @@ $(document).ready(function() {
       }
     }
   });
+
+  $("a.klikaa_span").on('click', function(e){
+      // e.preventDefault();
+      console.log("klikaa tästä");
+  });
 });

@@ -121,11 +121,13 @@ var search_process = function(){
 
 					output2 += '<tr>';
 					for(var j in d){
-						output2 += '<td class="text-center">' + d[j] + '</td>';
+						// output2 += '<td class="text-center"><span id="klikaa" class="klikaa_span" onClick="klikaaMethod(d[j])">' + d[j] + '</span></td>';
+						// output2 += '<td class="text-center"><a href="#" id="klikaa" class="klikaa_span">' + d[j] + '</a></td>';
+						output2 += '<td class="text-center"><a href="#" id="klikaa" class="klikaa_span" onClick="klikaaMethod(this)">' + d[j] + '</a></td>';
 					}
 					output2 += '<td class="text-center">' + String(idx+1) + '</td></tr>' ;
 				});
-      }
+      		}
 			$("#search-wrapper")
 				.append( output2 + "<br/>")
 				.addClass("bg-success")
@@ -139,7 +141,7 @@ var search_process = function(){
         serials.map(elem =>{
           i++;
 		  dnm_data.quantity_count++;
-          output1 += '<div class="pull-left" style="min-width: 150px;padding:0px 25px"><b>' + String(i) + '.</b> ' + elem + '</div>';
+          output1 += '<div class="pull-left" style="min-width: 150px;padding:0px 25px"><b>' + String(i) + '.</b> <span id="klikaa_serial">' + elem + '</span></div>';
         });
         $("#log-wrapper")
           .append( output1 + "<br/>")
@@ -150,6 +152,17 @@ var search_process = function(){
 		}
 	});
 };
+
+/* Source: https://github.com/zenithtekla/nodeMySQL/blob/master/config/assets/utils.js */
+String.prototype.re = function(pattern){
+  pattern = (typeof pattern ==='string') ? new RegExp(pattern) : pattern;
+  return pattern.test(this);
+};
+
+var klikaaMethod = function(v){
+	console.log(v.innerHTML);
+	$("#session_id").val(v.innerHTML);
+}
 
 var scan_process = function(v){
 	dnm_data.sales_order  = $('input[name="sales_order"]').val();
@@ -201,7 +214,7 @@ var scan_process = function(v){
 					.addClass("alert-danger");
 				$("#virhe").empty().append("Attention: " + data)
 					.css({  "max-height":"300px",
-						"overflow-y" : "auto" });		
+						"overflow-y" : "auto" });
 			}else {
 				$("#virhe") .removeClass("alert-danger")
 					.addClass("alert-success");
