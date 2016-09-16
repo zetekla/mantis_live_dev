@@ -74,10 +74,12 @@ var search_process = function(){
 	dnm_data.work_order  	= $('input[name="work_order"]').val();
 	dnm_data.scan_input   = $("#scan_result").val();
 	dnm_data.unique_key 	= $("#key").val();
+	dnm_data.session_id		= $("#session_id").val();
 	var postdata ={
 		work_order: dnm_data.work_order,
 		serial_scan: dnm_data.scan_input,
-		unique_key:	dnm_data.unique_key
+		unique_key:	dnm_data.unique_key,
+		session_id: dnm_data.session_id	
 	};
 	console.log(postdata);
 
@@ -130,7 +132,7 @@ var search_process = function(){
 				.css({  "max-height":"300px", "overflow-y" : "auto" })
 				.animate({"scrollTop": $("#search-wrapper")[0].scrollHeight}, "slow");
 
-      if(serials){
+      if($("#session_id").val()){
         var output1 = "";
         var i = 0;
 		dnm_data.quantity_count = 0;
@@ -154,6 +156,12 @@ var scan_process = function(v){
 	dnm_data.revision     = $("#field3").val();
 	dnm_data.unique_key  	= $('input[name="unique_key"]').val();
 	dnm_data.work_order     = $('input[name="work_order"]').val();
+	if(!document.getElementById('session_id').disabled){
+		document.getElementById('session_id').disabled=true;
+		$("#session_id").val("");
+	}
+	dnm_data.session_id		= $("#session_id").val();
+	$("#search-wrapper").empty();
 	var postdata ={
 		new_scan: v,
 		customer_id:       dnm_data.customer_id,
@@ -163,7 +171,8 @@ var scan_process = function(v){
 		format_example:    dnm_data.format_example,
 		revision:          dnm_data.revision,
 		unique_key:		   dnm_data.unique_key,
-		work_order:		   dnm_data.work_order
+		work_order:		   dnm_data.work_order,
+		session_id:		   dnm_data.session_id
 	};
 
 	console.log(postdata);
@@ -175,26 +184,52 @@ var scan_process = function(v){
 		//contentType: "application/json",
 		// dataType: 'json'
 	}).done(function(data){
-		if (data.indexOf('ERROR')>-1){
-			$("#virhe") .removeClass("alert-success")
-				.addClass("alert-danger");
-			$("#virhe").empty().append("Attention: " + data)
-				.css({  "max-height":"300px",
-					"overflow-y" : "auto" });
-		} else {
-			$("#virhe") .removeClass("alert-danger")
-				.addClass("alert-success");
-			dnm_data.quantity_count++;
-			document.getElementById('scan_result').select();
-			var data_output =  "<b>" + dnm_data.quantity_count + ".</b> " + data;
-			$("#virhe").empty().append("<div class='text-center'>last scan: " + data_output + "</div>");
-			data_output = "<div class='pull-left' style='min-width: 150px;padding: 0px 25px'>" + data_output + "</div>";
+		try{
+			var data_in = JSON.parse( data );
+			console.log(data_in);
+		}
+		catch(e){
+		if (e.constructor == SyntaxError){
+			console.log('syntaxError');
+			var data_in = JSON.parse('[{"error_code":"undefined"}]');
+			console.log(data_in);
+		}}
+		switch (data_in[0].error_code){
+			case 'undefined':
+			if (data.indexOf('ERROR')>-1){
+				$("#virhe") .removeClass("alert-success")
+					.addClass("alert-danger");
+				$("#virhe").empty().append("Attention: " + data)
+					.css({  "max-height":"300px",
+						"overflow-y" : "auto" });		
+			}else {
+				$("#virhe") .removeClass("alert-danger")
+					.addClass("alert-success");
+				dnm_data.quantity_count++;
+				if (!$("#session_id").val()){
+					document.getElementById('session_id').disabled=true;
+					$("#session_id").val(data_in[0].session_id);
+				}
+				document.getElementById('scan_result').select();
+				var data_output =  "<b>" + dnm_data.quantity_count + ".</b> " + data_in[0].scan;
+				$("#virhe").empty().append("<div class='text-center'>last scan: " + data_output + "</div>");
+				data_output = "<div class='pull-left' style='min-width: 150px;padding: 0px 25px'>" + data_output + "</div>";
 
-			$("#log-wrapper")  .append( data_output )
-				.addClass("bg-success")
+				$("#log-wrapper")  .append( data_output )
+					.addClass("bg-success")
+					.css({  "max-height":"300px",
+						"overflow-y" : "auto" })
+					.animate({"scrollTop": $("#log-wrapper")[0].scrollHeight}, "slow");
+			}
+			break;
+			case 'Error 20':
+				var data = JSON.parse( data );
+				$("#virhe").empty().append("<div>" + data[0].error_code + " - " + data[0].error_msg + " : Format - " + data[0].format + " Example - " + data[0].format_example + " SCAN: " + postdata.new_scan)
 				.css({  "max-height":"300px",
 					"overflow-y" : "auto" })
-				.animate({"scrollTop": $("#log-wrapper")[0].scrollHeight}, "slow");
+				.addClass("alert-danger");
+				$("#error_log").append("<div>" + data[0].error_code + " - " + data[0].error_msg + " : Format - " + data[0].format + " Example - " + data[0].format_example + " SCAN: " + postdata.new_scan);
+				break;
 		}
 	}).fail(function(jqXHR,textStatus, errorThrown){
 		$("#virhe") .removeClass("alert-success")
@@ -298,9 +333,10 @@ var print_html = function(){
 	 </div>
 	 <hr style="width:670px;float:left">`;
   var x=window.open ("","Serial List");
-  x.document.open().write(header_Content +'<div style="width:670px;font-family:arial;font-size:12px;">'+ $("#printable").html() +
+  var remove_css = "max-height: 300px;";
+  x.document.open().write(header_Content +'<div style="width:670px;font-family:arial;font-size:12px">'+ $("#printable").html().replace(remove_css,"") +
     '</div></body></html>');
-  //x.close();
+  x.document.close();
 };
 
 var cofc = function(){
@@ -350,8 +386,6 @@ var cofc = function(){
          <div style="width:100px;display:table;"><p>ID: </p><input style="width:75px;" value="` + userid +`"/></div>
          <div style="width:270px;display:table;"><p>Signature: </p><input style="width:210px;"></div>
       </div>
-      <div><br>
-      <hr style="width:670px;float:left">
     </div>`;
   cofcpage.document.write(cofcContent);
   cofcpage.document.close();

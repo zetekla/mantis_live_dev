@@ -19,8 +19,9 @@
 	$t_format			= $_POST['format'];
 	$t_format_example	= $_POST['format_example'];
 	$t_work_order 		= $_POST['work_order'];
+	$t_session_id 		= $_POST['session_id'];
 	if($t_unique_key){
-		$query = "SELECT id, customer_id, format, format_id
+		$query = "SELECT id, customer_id, format, format_example
 				FROM $g_mantis_assembly
 				LEFT JOIN $g_mantis_serials_format
 				ON $g_mantis_assembly.id = $g_mantis_serials_format.assembly_id
@@ -63,7 +64,8 @@
 												mantis_user_table.realname,
 												mantis_plugin_serials_serial_table.date_posted,
 												mantis_plugin_serials_serial_table.serial_scan,
-												mantis_wo_so_table.work_order
+												mantis_wo_so_table.work_order,
+												mantis_plugin_serials_serial_table.session_id
 										FROM `mantis_plugin_serials_serial_table` 
 										INNER JOIN mantis_assembly_table ON mantis_assembly_table.unique_key = mantis_plugin_serials_serial_table.unique_key
 										INNER JOIN mantis_customer_table ON mantis_customer_table.id = mantis_plugin_serials_serial_table.customer_id
@@ -95,22 +97,42 @@
 							}
 						}
 						else {
+							if (!$t_session_id){
+								$t_session_id = $t_user_id . date(ymdHis);
+							}
 							$query = sprintf("INSERT INTO $g_mantis_serials_serial " .
-									" (serial_id, assembly_id, customer_id, user_id, date_posted, serial_scan, unique_key ) " .
-									" VALUES (NULL, '%s', '%s', '%s', '%s', '%s', '%s');",
+									" (serial_id, assembly_id, customer_id, user_id, date_posted, serial_scan, unique_key, session_id ) " .
+									" VALUES (NULL, '%s', '%s', '%s', '%s', '%s', '%s', '%s');",
 											$t_assembly_id,
 											$t_customer_id,
 											$t_user_id,
 											$t_date_time,
 											$t_new_scan,
-											$t_unique_key);
+											$t_unique_key,
+											$t_session_id);
 							$result = mysql_query($query) or die(mysql_error());
-							echo $t_new_scan;
+							$row_array['error_code'] = 'undefined';
+							$row_array['scan'] = $t_new_scan;
+							$row_array['session_id'] = $t_session_id;
+							$json_response[] = $row_array;
+							echo json_encode($json_response);
 						}
 					}
-					else echo "ERROR 20 - Format is incorrect </br><b>Please verify with the following example : " . $t_format_example . "</b>";
+					else {
+						$row_array['error_code'] = 'Error 20';
+						$row_array['error_msg'] = 'Scan does not match format of this assembly';
+						$row_array['format'] = $t_format;
+						$row_array['format_example'] = $t_format_example;
+						$json_response[] =$row_array;
+						echo json_encode($json_response);
+					}
 				}
-			}else echo "ERROR 99 - Format for this assembly has not been loaded.</br><b>Please contact the M.E. to load.</b>";
+			}else {
+				$row_array['error_code'] = 'Error 99';
+				$row_array['error_msg'] = 'Format for this assembly has not been loaded.</br><b>Please contact the M.E. to add this assembly.</b>';
+				$json_response[] =$row_array;
+				echo json_encode($json_response);
+			}
 		}
 	}else{
 		echo "No Scan value was submitted";

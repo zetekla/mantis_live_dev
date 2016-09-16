@@ -106,6 +106,14 @@
 </tr>
 <tr <?php echo helper_alternate_class() ?>>
 	<td class="category">
+		<?php echo lang_get( 'landing_page' ) ?>
+	</td>
+	<td>
+		<input type="text" name="default_landing_page" size="100%" maxlength="100" value="<?php echo $t_pref->default_landing_page ?>" /> 
+	</td>
+</tr>
+<tr <?php echo helper_alternate_class() ?>>
+	<td class="category">
 		<?php echo lang_get( 'bugnote_order' ) ?>
 	</td>
 	<td>

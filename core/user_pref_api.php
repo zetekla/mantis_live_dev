@@ -33,6 +33,7 @@ class UserPreferences {
 	protected $default_project = NULL;
 	protected $refresh_delay = NULL;
 	protected $redirect_delay = NULL;
+	protected $default_landing_page = NULL;
 	protected $bugnote_order = NULL;
 	protected $email_on_new = NULL;
 	protected $email_on_assigned = NULL;
@@ -64,6 +65,7 @@ class UserPreferences {
 	'default_project' => 'default_project',
 	'refresh_delay' => 'default_refresh_delay',
 	'redirect_delay' => 'default_redirect_delay',
+	'default_landing_page' => 'default_landing_page',
 	'bugnote_order' => 'default_bugnote_order',
 	'email_on_new' => 'default_email_on_new',
 	'email_on_assigned' => 'default_email_on_assigned',

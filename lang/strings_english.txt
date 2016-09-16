@@ -435,6 +435,7 @@ $s_refresh_delay = 'Refresh Delay';
 $s_minutes = 'minutes';
 $s_redirect_delay = 'Redirect Delay';
 $s_seconds = 'seconds';
+$s_landing_page = 'Default Landing Page';
 $s_with_minimum_severity = 'With Minimum Severity of';
 $s_bugnote_order = 'Notes Sort Order';
 $s_bugnote_order_asc = 'Ascending';

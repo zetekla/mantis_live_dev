@@ -30,8 +30,7 @@ html_page_top2();
 	var user = "<?php echo user_get_field( auth_get_current_user_id() , 'realname' ) ?>";
 	var userid = "<?php echo preg_replace('/\D/','', user_get_field( auth_get_current_user_id() , 'username' )) ?>"
 </script>
-<section id="ui_data"></section>
-<form id="myform" name="form" ng-app="myApp" >
+<form id="myform" name="form" ng-app="myApp" hidden>
 <div class="container col-sm-12">
 	<div class="pull-right" style="position:absolute; background: white; right: 10px;  z-index: 1000">
 			<button type="button" id="reset" class="btn btn-secondary reset "><span class="glyphicon glyphicon-refresh"></span>
@@ -73,12 +72,13 @@ html_page_top2();
 	?>
 	</div>
 	<div id="top-function-wrapper">
-		<button type="button" id="search" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span>
+		<button type="button" id="search" ng-model="search" ng-click="search=true" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span>
 			<b>Search</b></button>
 		<button type="button" id="html-painike" class="btn btn-primary print"><span class="glyphicon glyphicon-print"></span>
-			<b>Print</b></button>
+			<b>Serial List</b></button>
 		<button type="button" id="cofc" class="btn btn-primary"><span class="glyphicon glyphicon-list-alt"></span>
 			<b>C of C</b></button>
+		<div class="input-group col-sm-2"  ><b>Session ID</b><input id="session_id" class="form-control" type="text" maxlength="16"></input></div>
 	</div>
 	<div class="col-sm-12">
 		<div class="input-group pull-left col-sm-3" >
@@ -86,11 +86,11 @@ html_page_top2();
 			<div class="typeahead-container">
 				<div >
 					<input id="field0" class="form-control" type="text" name="work_order" size="32" maxlength="32" value="" placeholder="Example 123456A" ng-model='query'></input>
-					<span id="msg" ng-show="query" ng-cloak>
-						<div class="alert alert-warning" ng-show="error" ng-cloak>
+					<span id="msg" ng-show="query">
+						<div class="alert alert-warning" ng-show="error">
 							<strong>No Results Found for {{query}}!</strong><br>Please Try Again.
 						</div>
-						<img ng-show="!error" src="images/load-am.gif" style="position: absolute;top: -2px;right:10px; z-index: 2" ng-cloak>
+						<img ng-show="!error" src="images/load-am.gif" style="position: absolute;top: -2px;right:10px; z-index: 2">
 					</span>
 				</div>	
 			</div>
@@ -186,6 +186,14 @@ html_page_top2();
 	<div class="row" style="padding-left:20px ; padding-right:20px ;padding-top:20px">
 		<div id="search-wrapper" class="col-md-12 right-scroll " style="border-radius: 4px; border: 1px solid transparent"></div>
 	</div>
+	<button class="btn btn-secondary btn-xs pull-right" type="button" ng-model="collapsed1" ng-click="collapsed1=!collapsed1"><span class="glyphicon glyphicon-activity"></span>
+	  Error Log
+	</button>
+	<br>
+	<div id="panel" ng-show="collapsed1" class="panel panel-default">
+		<div id="error_log" class="panel-body">
+		</div>
+	</div>
 </div>
 </form>
 <script>
@@ -219,6 +227,10 @@ html_page_top2();
 <script src="client/js/manextis.client.filters.js"></script>
 <script src="client/js/manextis.client.directives.js"></script>
 <script src="client/js/manextis.client.controller.js"></script>
+<script> $(window).load(function() {
+   $("#myform").show();
+});
+	</script>
 <?php
 html_page_bottom1( __FILE__ );
 // echo lang_get( 'word_separator' );

@@ -55,6 +55,7 @@
 	$t_prefs = user_pref_get( $f_user_id );
 
 	$t_prefs->redirect_delay	= gpc_get_int( 'redirect_delay' );
+	$t_prefs->default_landing_page	= gpc_get_string( 'default_landing_page' );
 	$t_prefs->refresh_delay		= gpc_get_int( 'refresh_delay' );
 	$t_prefs->default_project	= gpc_get_int( 'default_project' );
 

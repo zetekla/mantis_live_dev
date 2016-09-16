@@ -15,6 +15,7 @@ $g_mantis_serials_serial      = strtolower(plugin_table('serial'));
 $o_post['serial_scan']		    = $_POST['serial_scan'];
 $o_post['work_order']		    = $_POST['work_order'];
 $o_post['unique_key']		    = $_POST['unique_key'];
+$o_post['session_id']		    = $_POST['session_id'];
 /*$o_post['assembly_number']	= $_POST['assembly_number'];
 $o_post['assembly_id']		  = $_POST['assembly_id'];
 $o_post['customer_id']		  = $_POST['customer_id'];*/
@@ -41,7 +42,8 @@ $query = "
 		ut.realname,
 		st.date_posted,
 		st.serial_scan,
-		wt.work_order
+		wt.work_order,
+		st.session_id
 	FROM %s st
 	INNER JOIN %s at
 		ON st.unique_key = at.unique_key
@@ -58,11 +60,12 @@ function search ($o_post){
 	$p_serial_scan			= $o_post['serial_scan'];
 	$p_work_order			  = $o_post['work_order'];
 	$p_unique_key			  = $o_post['unique_key'];
+	$p_session_id			  = $o_post['session_id'];
 	/*$p_assembly_number	= $o_post['assembly_number'];
 	$p_assembly_id			= $o_post['assembly_id'];
 	$p_customer_id			= $o_post['customer_id'];*/
 	try {
-		if (!($p_serial_scan || $p_unique_key || $p_work_order))
+		if (!($p_serial_scan || $p_unique_key || $p_work_order || $p_session_id))
 			throw new Exception('ERROR - Please search using a WORK ORDER , UNIQUE_KEY , or SERIAL NUMBER (SCAN INPUT).');
 /*		if ($p_work_order){
 			$p_post['st.work_order']	= $p_work_order;
@@ -75,6 +78,10 @@ function search ($o_post){
 		if ($p_unique_key){
 			$p_post['st.unique_key']		= $p_unique_key;
 //			$p_search[]					= "Unique Key '$p_unique_key'";
+		}
+		if ($p_session_id){
+			$p_post['st.session_id']		= $p_session_id;
+//			$p_search[]					= "Session ID '$p_session_id'";
 		}
 
 		foreach ($p_post as $key => $value) {

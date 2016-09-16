@@ -68,7 +68,7 @@ $(document).ready(function() {
       search_process();
     }
   });
-  
+
   $("#scan_result").on({
     mouseenter: function(){
         $(this).css("background-color", "lightgray");

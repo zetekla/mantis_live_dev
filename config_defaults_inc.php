@@ -907,7 +907,7 @@
 	 * Can be: POSITION_TOP, POSITION_BOTTOM, or POSITION_BOTH.
 	 * @global int $g_action_button_position
 	 */
-	$g_action_button_position = POSITION_BOTTOM;
+	$g_action_button_position = POSITION_BOTH;
 
 	/**
 	 * show product versions in create, view and update screens
