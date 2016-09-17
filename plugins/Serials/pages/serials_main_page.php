@@ -71,14 +71,16 @@ html_page_top2();
 		echo "<span id='time'>". $t_now ."</span>";*/
 	?>
 	</div>
-	<div id="top-function-wrapper">
+	<div id="top-function-wrapper" class="form-inline">
 		<button type="button" id="search" ng-model="search" ng-click="search=true" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span>
 			<b>Search</b></button>
 		<button type="button" id="html-painike" class="btn btn-primary print"><span class="glyphicon glyphicon-print"></span>
 			<b>Serial List</b></button>
 		<button type="button" id="cofc" class="btn btn-primary"><span class="glyphicon glyphicon-list-alt"></span>
 			<b>C of C</b></button>
-		<div class="input-group col-sm-2"  ><b>Session ID</b><input id="session_id" class="form-control" type="text" maxlength="16"></input></div>
+		<label class="control-label">
+			<strong>Session ID</strong></label>
+		<input id="session_id" class="form-control" type="text" maxlength="16"></input>
 	</div>
 	<div class="col-sm-12">
 		<div class="input-group pull-left col-sm-3" >

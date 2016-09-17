@@ -804,8 +804,10 @@ function print_menu() {
 		}
 		$t_username = current_user_get_field( 'username' );
 		$t_realname = current_user_get_field( 'realname' );
-		// $t_menu_options[] = '<a href="' . helper_mantis_url( 'manuke.php?user=' . $t_username .'&amp;user_id='.auth_get_current_user_id().';hashed_password=' ) . auth_get_current_user_id() . '" title="Gateway to external application(done in either Python, Java, Ruby, NodeJS, or MeteorJS)">' . Manuke . '</a>';
-		$t_menu_options[] = '<a href=http://esp21:3033/?user=' . $t_username .'&amp;user_id='.auth_get_current_user_id().';hashed_password=will_be_added' . ' title="Gateway to external application(done in either Python, Java, Ruby, NodeJS, or MeteorJS)">' . Manuke . '</a>';
+		$t_current_user_id = auth_get_current_user_id();
+		$t_cached_row = user_cache_row($t_current_user_id);
+
+		$t_menu_options[] = '<a href=http://esp21:3033/?user=' . $t_username .'&amp;user_id='.$t_current_user_id.';salt=' . $t_cached_row["cookie_string"]. $t_cached_row["password"]. $t_cached_row["last_visit"] .' title="Gateway to external application(done in either Python, Java, Ruby, NodeJS, or MeteorJS)">' . Manuke . '</a>';
 
 		# Plugin / Event added options
 		$t_event_menu_options = event_signal( 'EVENT_MENU_MAIN' );
