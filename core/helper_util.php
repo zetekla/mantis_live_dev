@@ -144,6 +144,81 @@ class HelperUTIL{
 		return $config;
     }
 
+    public static function load_json(){
+    	$args = func_get_args();
+    	$numargs = func_num_args();
+    	// verify if array is empty
+    	if (empty($args)) {
+    		$file = self::CFG_FILE;
+    		if (!$conf = file_get_contents($file, TRUE)) throw new Exception('Unable to open ' . $file . '.');
+			else
+				$config = $conf;
+    	} else {
+    		foreach ($args as $key => $file) {
+    			// loading configured script
+				if (!$conf = file_get_contents($file, TRUE)) throw new Exception('Unable to open ' . $file . '.');
+				else {
+					if ($numargs == 1)
+						$config= $conf;
+					else
+						$config[]= $conf;
+				}
+    		}
+    	}
+		return $config;
+    }
+
+    // might attempt to bring Lodash power down to PHP
+    /*
+	USAGE: forEach(arr, function($v, $k){
+
+	}); // need testing, PHP usually declines immediate invoked function, so more doubt that one would have to write
+	$callback = function($v, $k){
+
+	}
+	// prior to doing the forEach, no inheritance of ES6 Fat arrows methods as PHP does not have Syntax Sugar, it is just impossible to do $callback = ($v, $k) => {};
+    */
+    public static function forEach($array, $callback){
+    	foreach ($array as $key => $value) {
+    		# code...
+    		if ($callback) $callback($value,$key);
+    	}
+    }
+
+    public static function forOwn($object, $callback){
+
+    }
+
+    public static function file_last_mod($directory){
+
+    	/* ref: https://github.com/zenithtekla/nodeMySQL/blob/master/config/config.view.js#L13
+
+    	var getDirectories = function (srcpath) {
+		    return fs.readdirSync(srcpath).filter(function(file) {
+		      return fs.statSync(path.join(srcpath, file)).isDirectory();
+		    });
+		}
+    	directory = path.resolve("/client/js");
+
+    	var _ = require('lodash'),
+    		fs= require('fs'),
+    		files = [];
+
+
+		_.forEach(directory, function(file){
+			files.push({name: file, last_mod: fs.statSync(directory+file));
+			// http://stackoverflow.com/a/37161107/5828821
+		});
+		return files;
+    	*/
+
+		// Similar to the just written method above, iterate through the entire directory to first get $files array of file names then _.forEach (foreach in PHP) to loop through.
+
+    	$files[0]["name"] = "manextis.client.filters.js";
+    	$files[0]["last_mod"] = filemtime( $directory . $files[0]["name"]);
+    	return $files[0];
+    }
+
     // this method will perform update even if entry does not exist; use w/mantis_db_query to perform check on result count of a SELECT query if necessary, see '06 - query_text exists' of xt_sync_update() method for example
     public static function mantis_db_query_update(){
 	try {

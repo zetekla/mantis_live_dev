@@ -102,6 +102,8 @@ var search_process = function(){
 
     var serials = [];
 		if (data.all){
+		console.log(data.all.response[0].work_order);
+		dnm_data.work_order = data.all.response[0].work_order;		
 			var output2 = ` <style>
 			                  tr:nth-child(odd){ background-color: white;}
 			                  td { nowrap; padding: 1px 3px;}
@@ -147,7 +149,7 @@ var search_process = function(){
 				serials.map(elem =>{
 				  i++;
 				  dnm_data.quantity_count++;
-				  output1 += '<div style="min-width: 150px;padding:0px 25px"><b>' + String(i) + '.</b> <span >' + elem + '</span></div>';
+				  output1 += '<div  class="pull-left col-xs-2" style="min-width: 117px;padding:0px 25px"><font color="blue">' + String(i) + '.</font> <span >' + elem + '</span></div>';
 				});
 				$("#log-wrapper")
 				  .append(output1)
@@ -166,10 +168,7 @@ String.prototype.re = function(pattern){
 };
 
 var klikaaMethod = function(v){
-	console.log(v.innerHTML);
 	$("#session_id").val(v.innerHTML);
-	console.log(dnm_data.work_order );
-	$("#work_order").val(dnm_data.work_order);
 	document.getElementById('session_id').disabled=true;
 	search_process();
 }
@@ -234,9 +233,9 @@ var scan_process = function(v){
 					$("#session_id").val(data_in[0].session_id);
 				}
 				document.getElementById('scan_result').select();
-				var data_output =  "<b>" + dnm_data.quantity_count + ".</b> " + data_in[0].scan;
+				var data_output =  '<font color="blue">' + dnm_data.quantity_count + '.</font><span> ' + data_in[0].scan + '</span>';
 				$("#virhe").empty().append("<div class='text-center'>last scan: " + data_output + "</div>");
-				data_output = "<div class='pull-left' style='min-width: 150px;padding:0px 25px'>" + data_output + "</div>";
+				data_output ='<div class="pull-left col-xs-2" style="min-width: 117px;padding:0px 25px">' + data_output + '</div>';
 
 				$("#log-wrapper")  .append( data_output )
 					.addClass("bg-success")
@@ -252,7 +251,15 @@ var scan_process = function(v){
 					"overflow-y" : "auto" })
 				.addClass("alert-danger");
 				$("#error_log").append("<div>" + data[0].error_code + " - " + data[0].error_msg + " : Format - " + data[0].format + " Example - " + data[0].format_example + " SCAN: " + postdata.new_scan);
-				break;
+			break;
+			case 'Error 99':
+				var data = JSON.parse( data );
+				$("#virhe").empty().append("<div>" + data[0].error_code + " - " + data[0].error_msg + " SCAN: " + postdata.new_scan)
+				.css({  "max-height":"300px",
+					"overflow-y" : "auto" })
+				.addClass("alert-danger");
+				$("#error_log").append("<div>" + data[0].error_code + " - " + data[0].error_msg + " SCAN: " + postdata.new_scan);
+				break;	
 		}
 	}).fail(function(jqXHR,textStatus, errorThrown){
 		$("#virhe") .removeClass("alert-success")
@@ -357,7 +364,7 @@ var print_html = function(){
 	 <hr style="width:670px;float:left">`;
   var x=window.open ("","Serial List");
   var remove_css = "max-height: 300px;";
-  x.document.open().write(header_Content +'<div style="width:670px;font-family:arial;font-size:12px">'+ $("#printable").html().replace(remove_css,"") +
+  x.document.open().write(header_Content +'<div style="max-width:670px;font-family:arial;font-size:12px">'+ $("#printable").html().replace(remove_css,"") +
     '</div></body></html>');
   x.document.close();
 };

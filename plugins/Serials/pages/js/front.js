@@ -28,7 +28,7 @@ $(document).ready(function() {
  	$("#reset").on('click', function(e) {
  	    e.preventDefault();
  	    localStorage.clear();
-		  location.reload();
+		  location.reload(true);
   });
 
 	$("#search").on({
@@ -101,7 +101,9 @@ $(document).ready(function() {
       }
     }
   });
-
+  
+  $("#myform").show();
+  
   $("a.klikaa_span").on('click', function(e){
       // e.preventDefault();
       console.log("klikaa tästä");

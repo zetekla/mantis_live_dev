@@ -72,7 +72,7 @@ html_page_top2();
 	?>
 	</div>
 	<div id="top-function-wrapper" class="form-inline">
-		<button type="button" id="search" ng-model="search" ng-click="search=true" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span>
+		<button type="button" id="search" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span>
 			<b>Search</b></button>
 		<button type="button" id="html-painike" class="btn btn-primary print"><span class="glyphicon glyphicon-print"></span>
 			<b>Serial List</b></button>
@@ -215,7 +215,7 @@ html_page_top2();
 		ref: "ajax_typeahead_api.js"
 	},{
 		path: PLUGIN_URL_SERIALS+"/js/",
-		ref: ["format_proc.js", "process_api.js", "front.js"]
+		ref: ["process_api.js", "front.js"]
 	},{
 		path: MANTIS_EXTENDED_KERNEL + "/client/css/",
 		ref: ["default.css"]
@@ -229,10 +229,7 @@ html_page_top2();
 <script src="client/js/manextis.client.filters.js"></script>
 <script src="client/js/manextis.client.directives.js"></script>
 <script src="client/js/manextis.client.controller.js"></script>
-<script> $(window).load(function() {
-   $("#myform").show();
-});
-	</script>
+
 <?php
 html_page_bottom1( __FILE__ );
 // echo lang_get( 'word_separator' );
