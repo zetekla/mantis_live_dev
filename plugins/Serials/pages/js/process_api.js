@@ -149,7 +149,7 @@ var search_process = function(){
 				serials.map(elem =>{
 				  i++;
 				  dnm_data.quantity_count++;
-				  output1 += '<div  class="pull-left col-xs-2" style="min-width: 117px;padding:0px 25px"><font color="blue">' + String(i) + '.</font> <span >' + elem + '</span></div>';
+				  output1 += '<div  class="pull-left" style="min-width: 150px;padding:0px 25px"><font color="blue">' + String(i) + '.</font> <span >' + elem + '</span></div>';
 				});
 				$("#log-wrapper")
 				  .append(output1)
@@ -235,7 +235,7 @@ var scan_process = function(v){
 				document.getElementById('scan_result').select();
 				var data_output =  '<font color="blue">' + dnm_data.quantity_count + '.</font><span> ' + data_in[0].scan + '</span>';
 				$("#virhe").empty().append("<div class='text-center'>last scan: " + data_output + "</div>");
-				data_output ='<div class="pull-left col-xs-2" style="min-width: 117px;padding:0px 25px">' + data_output + '</div>';
+				data_output ='<div style="min-width: 150px;padding:0px 25px">' + data_output + '</div>';
 
 				$("#log-wrapper")  .append( data_output )
 					.addClass("bg-success")

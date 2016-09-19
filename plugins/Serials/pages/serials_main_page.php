@@ -229,7 +229,10 @@ html_page_top2();
 <script src="client/js/manextis.client.filters.js"></script>
 <script src="client/js/manextis.client.directives.js"></script>
 <script src="client/js/manextis.client.controller.js"></script>
-
+<script> $(window).load(function() {
+   $("#myform").show();
+});
+	</script>
 <?php
 html_page_bottom1( __FILE__ );
 // echo lang_get( 'word_separator' );

@@ -178,7 +178,7 @@ class HelperUTIL{
 	}
 	// prior to doing the forEach, no inheritance of ES6 Fat arrows methods as PHP does not have Syntax Sugar, it is just impossible to do $callback = ($v, $k) => {};
     */
-    public static function forEach($array, $callback){
+    /*public static function forEach($array, $callback){
     	foreach ($array as $key => $value) {
     		# code...
     		if ($callback) $callback($value,$key);
@@ -187,7 +187,7 @@ class HelperUTIL{
 
     public static function forOwn($object, $callback){
 
-    }
+    }*/
 
     public static function file_last_mod($directory){
 
@@ -199,6 +199,7 @@ class HelperUTIL{
 		    });
 		}
     	directory = path.resolve("/client/js");
+    	directory = getDirectories(directory);
 
     	var _ = require('lodash'),
     		fs= require('fs'),
