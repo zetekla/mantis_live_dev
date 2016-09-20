@@ -636,7 +636,7 @@ class ERP_mailbox_api
 		$t_email[ 'In-Reply-To' ] = $t_mp->inreplyto();
 		$t_email[ 'Thread-Index' ] = $t_mp->threadindex();
 		
-		$t_email[ 'Replies' ] = build_reply( trim( $t_mp->body() ) );
+		$t_email[ 'Replies' ] = build_reply( $t_email[ 'X-Mantis-Body' ] );
 
 		$this->show_memory_usage( 'Finished Mail Parser' );
 
@@ -765,7 +765,7 @@ class ERP_mailbox_api
 
 		if ( $this->_mail_add_bugnotes )
 		{
-			$t_bug_id = $this->mail_is_a_bugnote( $p_email[ 'Subject' ], $t_references );
+			$t_bug_id = $this->mail_is_a_bugnote( $p_email[ 'Subject' ], $t_references, $p_email[ 'Thread-Index' ] );
 		}
 		else
 		{
@@ -777,11 +777,11 @@ class ERP_mailbox_api
 			// @TODO@ Disabled for now until we find a good solution on how to handle the reporters possible lack of access permissions
 //			access_ensure_bug_level( config_get( 'add_bugnote_threshold' ), $f_bug_id );
 
-			$t_description = $p_email[ 'X-Mantis-Body' ];
+			$t_description = $p_email[ 'Replies' ];
 
-			$t_description = $this->identify_replies( $t_description );
-			$t_description = $this->strip_signature( $t_description );
-			$t_description = $this->add_additional_info( 'note', $p_email, $t_description );
+			//$t_description = $this->identify_replies( $t_description );
+			//$t_description = $this->strip_signature( $t_description );
+			//$t_description = $this->add_additional_info( 'note', $p_email, $t_description );
 
 			$t_project_id = bug_get_field( $t_bug_id, 'project_id' );
 			ERP_set_temporary_overwrite( 'project_override', $t_project_id );
@@ -1288,10 +1288,12 @@ class ERP_mailbox_api
 
 	# --------------------
 	# return bug_id if there is a valid mantis bug refererence in subject, reference header or return false if not found
-	private function mail_is_a_bugnote( $p_mail_subject, $p_references )
+	private function mail_is_a_bugnote( $p_mail_subject, $p_references , $p_thread_index)
 	{
 		$t_bug_id = $this->get_bug_id_from_subject( $p_mail_subject );
-
+		if ( $t_bug_id == FALSE){
+			$t_bug_id = $this->get_bug_id_from_threadindex( $p_thread_index );
+		}
 		if ( $t_bug_id !== FALSE && bug_exists( $t_bug_id ) )
 		{
 			return( $t_bug_id );
@@ -1393,7 +1395,7 @@ class ERP_mailbox_api
 			{
 				// Check whether the msg_id is already in the database table
 				$t_bug_id = $this->get_bug_id_from_references( $p_msg_id );
-				//$t_bug_id = $this->get_bug_id_from_threadindex( $p_thread_index );
+				$t_bug_id = $this->get_bug_id_from_threadindex( $p_thread_index );
 
 				if( $t_bug_id === FALSE )
 				{

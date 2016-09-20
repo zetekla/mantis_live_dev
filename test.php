@@ -1,5 +1,35 @@
 <?php
 
+/* src: https://gist.github.com/zenithtekla/0849c76c541113e56266d89e559fde4a */
+function get_all_images_from_a_directory($folder='test_images/', $type='{*.jpg, *.JPG, *.JPEG, *.png, *.PNG}'){
+    $images = [];
+    $all_images = glob($folder.$type, GLOB_BRACE);
+    $count = count($all_images);
+    for ($i = 0; $i < $count; $i++) {
+        $images[$i] = new stdClass();
+        $images[$i]->src = $all_images[$i];
+        $images[$i]->name = substr($all_images[$i],strlen($folder),strpos($all_images[$i], '.')-strlen($folder));
+        $images[$i]->modified = date('YmdHis', filemtime($all_images[$i])).$i;
+    }
+    return $images;
+}
+
+function get_all_files_from_a_directory($folder='test_files/', $type='{*.css, *.js}'){
+    $files = [];
+    $all_files = glob($folder.$type, GLOB_BRACE);
+    $count = count($all_files);
+    for ($i = 0; $i < $count; $i++) {
+        $files[$i] = new stdClass();
+        // $files[$i]->path = $folder;
+        $files[$i]->src = $all_files[$i];
+        $files[$i]->name = substr($all_files[$i],strlen($folder),strpos($all_files[$i], '.')-strlen($folder));
+        $files[$i]->modified = date('YmdHis', filemtime($all_files[$i])).$i;
+    }
+    return $files;
+}
+
+print_r(get_all_files_from_a_directory());
+
 /* ref: https://github.com/zenithtekla/nodeMySQL/blob/master/config/config.view.js#L13
 
 	var getDirectories = function (srcpath) {
@@ -32,7 +62,7 @@ function file_last_mods($directory){
 print_r(file_last_mods("client/js/"));
 
 /*
-// from json_api, it doesn't work
+// from json_api, it DOESN'T work
 function json_url( $p_url, $p_member = null ) {
 	$t_data = url_get( $p_url );
 	$t_json = json_decode( utf8_encode($t_data) );
@@ -46,7 +76,11 @@ function json_url( $p_url, $p_member = null ) {
 	}
 }
 
-print_r(json_url("cfg/config.json"));
+print_r(json_url("data:application/octet-stream;base64,ew0KCSJwcm9kdWN0aW9uIjogew0KCSJ1c2VyIjogInJvb3QiLA0KCSJwYXNzd29yZCI6IG51bGwsDQoJImRhdGFiYXNlIjogImRhdGFiYXNlX3Byb2R1Y3Rpb24iLA0KCSJob3N0IjogIjEyNy4wLjAuMSIsDQoJImRpYWxlY3QiOiAibXlzcWwiDQogIAl9DQp9"));
+
+// print_r(json_url("cfg/config.json"));
+
+// print_r(json_url("https://github.com/zenithtekla/nodeMySQL/blob/master/package.json"));
 
 */
 
@@ -76,4 +110,20 @@ function load_json(){
 	return $config;
 }
 
-print_r(load_json("cfg/config.json")); // works for now
+function load_json_obj($file){
+	$json_file = file_get_contents($file);
+	return json_decode($json_file);
+}
+
+function load_json_arr($file){
+	$json_file = file_get_contents($file);
+	return json_decode($json_file, true);
+}
+
+function load_json_string($file){
+	return file_get_contents($file);
+}
+
+// print_r(load_json("cfg/config.json")); // works for now
+print_r(load_json_string("cfg/config.json")); // works for now
+
