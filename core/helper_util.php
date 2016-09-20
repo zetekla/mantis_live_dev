@@ -192,6 +192,7 @@ class HelperUTIL{
 	        $images[$i]->src = $all_images[$i];
 	        $images[$i]->name = substr($all_images[$i],strlen($folder),strpos($all_images[$i], '.')-strlen($folder));
 	        $images[$i]->modified = date('YmdHis', filemtime($all_images[$i]));
+	        $images[$i]->size = filesize($all_files[$i]); // . ' bytes';
 	    }
 	    return $images;
 	}
@@ -222,6 +223,7 @@ class HelperUTIL{
 	        $files[$i]->src = $all_files[$i];
 	        $files[$i]->name = substr($all_files[$i],strlen($folder),strpos($all_files[$i], '.')-strlen($folder));
 	        $files[$i]->modified = date('YmdHis', filemtime($all_files[$i]));
+	        $files[$i]->size = filesize($all_files[$i]); // . ' bytes';
 	    }
 	    return $files;
 	}
