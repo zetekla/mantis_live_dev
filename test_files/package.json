@@ -1,0 +1,59 @@
+{
+  "name": "mysqlApplication",
+  "description": "Full-Stack JavaScript with Sequelize, Express, AngularJS, and Node.js.",
+  "version": "1.0.0",
+  "nodeMySQL-version": "1.0.0-beta",
+  "private": false,
+  "author": "https://github.com/zenithtekla/nodeMySQL",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zenithtekla/nodeMySQL.git"
+  },
+  "engines": {
+    "npm": ">=2.0.0"
+  },
+  "scripts": {
+    "start": "nodemon server.js NODE_ENV=production",
+    "dev": "nodemon server.js NODE_ENV=development"
+  },
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "bower": "^1.7.9",
+    "chalk": "^1.1.3",
+    "chalk-log": "^1.2.0",
+    "consolidate": "^0.14.1",
+    "cookie-parser": "^1.4.3",
+    "cors": "^2.8.0",
+    "ejs": "^2.5.1",
+    "epilogue": "^0.7.0",
+    "express": "^4.13.4",
+    "express-handlebars": "^3.0.0",
+    "express-session": "^1.14.1",
+    "favicon": "0.0.2",
+    "hjs": "0.0.6",
+    "hogan.js": "^3.0.2",
+    "lodash": "^4.15.0",
+    "method-override": "^2.3.6",
+    "mongoose": "~4.4.8",
+    "morgan": "^1.7.0",
+    "mysql": "^2.10.2",
+    "nunjucks": "^2.4.2",
+    "passport": "^0.3.2",
+    "pug": "^2.0.0-beta3",
+    "request": "^2.74.0",
+    "sequelize": "^3.23.6",
+    "sequelize-isunique-validator": "^1.1.1",
+    "swig": "^1.4.2"
+  },
+  "devDependencies": {
+    "eslint": "^3.4.0",
+    "eslint-config-airbnb": "^10.0.1",
+    "eslint-config-google": "^0.6.0",
+    "eslint-plugin-import": "^1.14.0",
+    "eslint-plugin-jsx-a11y": "^2.2.0",
+    "eslint-plugin-lodash": "^1.10.1",
+    "eslint-plugin-react": "^6.2.0",
+    "karma": "^1.2.0"
+  }
+}

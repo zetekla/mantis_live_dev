@@ -168,6 +168,64 @@ class HelperUTIL{
 		return $config;
     }
 
+	public static function load_json_obj($file){
+		$json_file = file_get_contents($file);
+		return json_decode($json_file);
+	}
+
+	public static function load_json_arr($file){
+		$json_file = file_get_contents($file);
+		return json_decode($json_file, true);
+	}
+
+	public static function load_json_string($file){
+		return file_get_contents($file);
+	}
+
+	/* src: https://gist.github.com/zenithtekla/0849c76c541113e56266d89e559fde4a */
+	public static function get_all_images_from_a_directory($folder='test_images/', $type='{*.jpg, *.JPG, *.JPEG, *.png, *.PNG}'){
+	    $images = [];
+	    $all_images = glob($folder.$type, GLOB_BRACE);
+	    $count = count($all_images);
+	    for ($i = 0; $i < $count; $i++) {
+	        $images[$i] = new stdClass();
+	        $images[$i]->src = $all_images[$i];
+	        $images[$i]->name = substr($all_images[$i],strlen($folder),strpos($all_images[$i], '.')-strlen($folder));
+	        $images[$i]->modified = date('YmdHis', filemtime($all_images[$i])).$i;
+	    }
+	    return $images;
+	}
+
+	/* src: https://gist.github.com/zenithtekla/0849c76c541113e56266d89e559fde4a */
+	public static function get_all_json_from_a_directory($folder='test_files/', $type='{*.json}'){
+	    $files = [];
+	    $all_files = glob($folder.$type, GLOB_BRACE);
+	    $count = count($all_files);
+	    for ($i = 0; $i < $count; $i++) {
+	        $files[$i] = new stdClass();
+	        // $files[$i]->path = $folder;
+	        $files[$i]->src = $all_files[$i];
+	        $files[$i]->content = file_get_contents($all_files[$i]);
+	        $files[$i]->name = substr($all_files[$i],strlen($folder),strpos($all_files[$i], '.')-strlen($folder));
+	        $files[$i]->modified = date('YmdHis', filemtime($all_files[$i])).$i;
+	    }
+	    return $files;
+	}
+
+	public static function get_all_files_from_a_directory($folder='test_files/', $type='{*.css, *.js}'){
+	    $files = [];
+	    $all_files = glob($folder.$type, GLOB_BRACE);
+	    $count = count($all_files);
+	    for ($i = 0; $i < $count; $i++) {
+	        $files[$i] = new stdClass();
+	        // $files[$i]->path = $folder;
+	        $files[$i]->src = $all_files[$i];
+	        $files[$i]->name = substr($all_files[$i],strlen($folder),strpos($all_files[$i], '.')-strlen($folder));
+	        $files[$i]->modified = date('YmdHis', filemtime($all_files[$i])).$i;
+	    }
+	    return $files;
+	}
+
     // might attempt to bring Lodash power down to PHP
     /*
 	USAGE: forEach(arr, function($v, $k){
