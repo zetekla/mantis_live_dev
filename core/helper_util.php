@@ -191,7 +191,7 @@ class HelperUTIL{
 	        $images[$i] = new stdClass();
 	        $images[$i]->src = $all_images[$i];
 	        $images[$i]->name = substr($all_images[$i],strlen($folder),strpos($all_images[$i], '.')-strlen($folder));
-	        $images[$i]->modified = date('YmdHis', filemtime($all_images[$i])).$i;
+	        $images[$i]->modified = date('YmdHis', filemtime($all_images[$i]));
 	    }
 	    return $images;
 	}
@@ -207,7 +207,7 @@ class HelperUTIL{
 	        $files[$i]->src = $all_files[$i];
 	        $files[$i]->content = file_get_contents($all_files[$i]);
 	        $files[$i]->name = substr($all_files[$i],strlen($folder),strpos($all_files[$i], '.')-strlen($folder));
-	        $files[$i]->modified = date('YmdHis', filemtime($all_files[$i])).$i;
+	        $files[$i]->modified = date('YmdHis', filemtime($all_files[$i]));
 	    }
 	    return $files;
 	}
@@ -221,7 +221,7 @@ class HelperUTIL{
 	        // $files[$i]->path = $folder;
 	        $files[$i]->src = $all_files[$i];
 	        $files[$i]->name = substr($all_files[$i],strlen($folder),strpos($all_files[$i], '.')-strlen($folder));
-	        $files[$i]->modified = date('YmdHis', filemtime($all_files[$i])).$i;
+	        $files[$i]->modified = date('YmdHis', filemtime($all_files[$i]));
 	    }
 	    return $files;
 	}
