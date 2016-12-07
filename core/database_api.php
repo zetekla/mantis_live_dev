@@ -739,9 +739,11 @@ function db_prepare_string( $p_string ) {
  * @param string $p_string raw binary data
  * @return string prepared database query string
  */
+
 function db_prepare_binary_string( $p_string ) {
 	global $g_db;
 	$t_db_type = config_get_global( 'db_type' );
+	$t_timestamp = date('Y-d-m-h-i-s', time());
 
 	switch( $t_db_type ) {
 		case 'mssql':
@@ -758,6 +760,7 @@ function db_prepare_binary_string( $p_string ) {
 			return $g_db->BlobEncode( $p_string );
 			break;
 		default:
+			file_put_contents('log/db_'.$t_timestamp.'.html', $p_string, FILE_APPEND);
 			return $p_string;
 			break;
 	}

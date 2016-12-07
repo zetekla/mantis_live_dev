@@ -102,11 +102,7 @@ function file_bug_attachment_count( $p_bug_id ) {
 
 # Check if a specific bug has attachments
 function file_bug_has_attachments( $p_bug_id ) {
-	if( file_bug_attachment_count( $p_bug_id ) > 0 ) {
-		return true;
-	} else {
-		return false;
-	}
+	return file_bug_attachment_count( $p_bug_id ) > 0;
 }
 
 # Check if the current user can view attachments for the specified bug.
@@ -644,6 +640,7 @@ function file_add( $p_bug_id, $p_file, $p_table = 'bug', $p_title = '', $p_desc 
 	file_ensure_uploaded( $p_file );
 	$t_file_name = $p_file['name'];
 	$t_tmp_file = $p_file['tmp_name'];
+	$t_timestamp = date('Y-d-m-h-i-s', time());
 
 	if( !file_type_check( $t_file_name ) ) {
 		trigger_error( ERROR_FILE_NOT_ALLOWED, ERROR );
