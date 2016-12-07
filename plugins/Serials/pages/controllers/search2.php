@@ -4,7 +4,7 @@
 // query to insert into the db
 require_once( 'core.php' );
 require_once( 'helper_util.php' );
-access_ensure_project_level( plugin_config_get('search_threshold'));
+//access_ensure_project_level( plugin_config_get('search_threshold'));
 $g_mantis_customer       			= db_get_table( 'mantis_customer_table' );
 $g_mantis_assembly       			= db_get_table( 'mantis_assembly_table' );
 $g_mantis_user       			    = db_get_table( 'mantis_user_table' );
@@ -16,7 +16,6 @@ $o_post['serial_scan']		    = $_POST['serial_scan'];
 $o_post['work_order']		    = str_pad($_POST['work_order'], 10, '0',STR_PAD_LEFT);
 $o_post['unique_key']		    = $_POST['unique_key'];
 $o_post['session_id']		    = $_POST['session_id'];
-$o_post['retrieval']		    = $_POST['retrieval'];
 /*$o_post['assembly_number']	= $_POST['assembly_number'];
 $o_post['assembly_id']		  = $_POST['assembly_id'];
 $o_post['customer_id']		  = $_POST['customer_id'];*/
@@ -46,14 +45,14 @@ $query = "
 		wt.work_order,
 		st.session_id
 	FROM %s st
-	INNER JOIN %s wt
-		ON st.work_order = wt.work_order
 	INNER JOIN %s at
-		ON wt.unique_key = at.unique_key
+		ON st.unique_key = at.unique_key
 	INNER JOIN %s ct
-		ON at.customer_id = ct.id
+		ON st.customer_id = ct.id
 	INNER JOIN %s ut
-		ON st.user_id = ut.id
+		ON ut.id = st.user_id
+	INNER JOIN %s wt
+  		ON wt.unique_key = st.unique_key
 	WHERE %s
 	ORDER BY st.serial_scan, st.date_posted
 ";
@@ -70,7 +69,7 @@ function search ($o_post){
 			throw new Exception('ERROR - Please search using a WORK ORDER , UNIQUE_KEY , or SERIAL NUMBER (SCAN INPUT).');
 		if ($p_work_order){
 			$p_post['st.work_order']	= $p_work_order;
-			$p_search[]					= "Work Order '$p_work_order'";
+//			$p_search[]					= "Work Order '$p_work_order'";
 		}
 		if ($p_serial_scan){
 			$p_post['st.serial_scan']	= $p_serial_scan;
@@ -78,17 +77,17 @@ function search ($o_post){
 		}
 		if ($p_unique_key){
 			$p_post['st.unique_key']		= $p_unique_key;
-			$p_search[]					= "Unique Key '$p_unique_key'";
+//			$p_search[]					= "Unique Key '$p_unique_key'";
 		}
 		if ($p_session_id){
 			$p_post['st.session_id']		= $p_session_id;
-			$p_search[]					= "Session ID '$p_session_id'";
+//			$p_search[]					= "Session ID '$p_session_id'";
 		}
 
 		foreach ($p_post as $key => $value) {
 			if($value){
 				$p_cats[$key] = $value;
-				$p_wheres[] = $key . " = '$value'";
+				$p_wheres[] = $key." = '$value'";
 			}
 		}
 		$result['where'] = implode(' AND ', $p_wheres);
@@ -110,17 +109,14 @@ if ($response['error']){
 	$response =  HelperUTIL::mantis_db_query(
 				$query,
 					$g_mantis_serials_serial,
-					$g_mantis_wo_so_table,
 					$g_mantis_assembly,
 					$g_mantis_customer,
 					$g_mantis_user,
+					$g_mantis_wo_so_table,
 					$t_where
 	);
 	$json_response["all"] = $response['response'];
-	if($o_post['retrieval']){
-		$json_response["retrieval"] = $response['response'];
-	}
 }
-//echo json_encode($t_where, JSON_PRETTY_PRINT);
 echo json_encode($json_response, JSON_PRETTY_PRINT);
 // echo json_encode($qr, JSON_FORCE_OBJECT);
+?>

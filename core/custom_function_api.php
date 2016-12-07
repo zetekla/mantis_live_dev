@@ -136,7 +136,7 @@ function custom_function_default_checkin( $p_issue_id, $p_comment, $p_file, $p_n
 		if( VS_PRIVATE == config_get( 'source_control_notes_view_status' ) ) {
 			$t_private = true;
 		}
-		bugnote_add( $p_issue_id, $p_comment, 0, $t_private );
+		bugnote_add( $p_issue_id, $p_comment, $p_thread_index = null, 0, $t_private );
 
 		$t_status = config_get( 'source_control_set_status_to' );
 		if(( OFF != $t_status ) && $p_fixed ) {

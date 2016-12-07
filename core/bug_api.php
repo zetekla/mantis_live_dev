@@ -1131,6 +1131,7 @@ function bug_delete( $p_bug_id ) {
 	$t_bug_table = db_get_table( 'mantis_bug_table' );
 	$t_bug_text_table = db_get_table( 'mantis_bug_text_table' );
 
+
 	# call pre-deletion custom function
 	helper_call_custom_function( 'issue_delete_validate', array( $p_bug_id ) );
 
@@ -1188,6 +1189,7 @@ function bug_delete( $p_bug_id ) {
 	bug_clear_cache( $p_bug_id );
 	bug_text_clear_cache( $p_bug_id );
 
+	ERP_delete ($p_bug_id);
 	# db_query errors on failure so:
 	return true;
 }
@@ -1199,6 +1201,13 @@ function bug_delete( $p_bug_id ) {
  * @access public
  * @uses database_api.php
  */
+ function ERP_delete ($p_bug_id){
+	$t_bug_text_table = 'mantis_plugin_emailreporting_msgids_table';
+	$query = "DELETE FROM $t_bug_text_table
+				  WHERE issue_id=" . db_param();
+	db_query_bound( $query, Array( $p_bug_id ) );
+ }
+ 
 function bug_delete_all( $p_project_id ) {
 	$c_project_id = (int) $p_project_id;
 
@@ -1576,7 +1585,7 @@ function bug_assign( $p_bug_id, $p_user_id, $p_bugnote_text = '', $p_bugnote_pri
 		history_log_event_direct( $c_bug_id, 'handler_id', $h_handler_id, $p_user_id );
 
 		# Add bugnote if supplied ignore false return
-		bugnote_add( $p_bug_id, $p_bugnote_text, 0, $p_bugnote_private, 0, '', NULL, FALSE );
+		bugnote_add( $p_bug_id, $p_bugnote_text, $p_thread_index = null, 0, $p_bugnote_private, 0, '', NULL, FALSE );
 
 		# updated the last_updated date
 		bug_update_date( $p_bug_id );
@@ -1605,7 +1614,7 @@ function bug_close( $p_bug_id, $p_bugnote_text = '', $p_bugnote_private = false,
 	# Add bugnote if supplied ignore a false return
 	# Moved bugnote_add before bug_set_field calls in case time_tracking_no_note is off.
 	# Error condition stopped execution but status had already been changed
-	bugnote_add( $p_bug_id, $p_bugnote_text, $p_time_tracking, $p_bugnote_private, 0, '', NULL, FALSE );
+	bugnote_add( $p_bug_id, $p_bugnote_text, $p_thread_index = null, $p_time_tracking, $p_bugnote_private, 0, '', NULL, FALSE );
 
 	bug_set_field( $p_bug_id, 'status', config_get( 'bug_closed_status_threshold' ) );
 
@@ -1639,7 +1648,7 @@ function bug_resolve( $p_bug_id, $p_resolution, $p_status = null, $p_fixed_in_ve
 	# Add bugnote if supplied
 	# Moved bugnote_add before bug_set_field calls in case time_tracking_no_note is off.
 	# Error condition stopped execution but status had already been changed
-	bugnote_add( $p_bug_id, $p_bugnote_text, $p_time_tracking, $p_bugnote_private, 0, '', NULL, FALSE );
+	bugnote_add( $p_bug_id, $p_bugnote_text, $p_thread_index = null, $p_time_tracking, $p_bugnote_private, 0, '', NULL, FALSE );
 
 	$t_duplicate = !is_blank( $p_duplicate_id ) && ( $p_duplicate_id != 0 );
 	if( $t_duplicate ) {
@@ -1721,7 +1730,7 @@ function bug_reopen( $p_bug_id, $p_bugnote_text = '', $p_time_tracking = '0:00',
 	# Add bugnote if supplied
 	# Moved bugnote_add before bug_set_field calls in case time_tracking_no_note is off.
 	# Error condition stopped execution but status had already been changed
-	bugnote_add( $p_bug_id, $p_bugnote_text, $p_time_tracking, $p_bugnote_private, 0, '', NULL, FALSE );
+	bugnote_add( $p_bug_id, $p_bugnote_text, $p_thread_index = null, $p_time_tracking, $p_bugnote_private, 0, '', NULL, FALSE );
 
 	bug_set_field( $p_bug_id, 'status', config_get( 'bug_reopen_status' ) );
 	bug_set_field( $p_bug_id, 'resolution', config_get( 'bug_reopen_resolution' ) );

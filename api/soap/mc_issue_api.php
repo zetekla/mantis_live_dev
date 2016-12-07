@@ -776,7 +776,7 @@ function mc_issue_add( $p_username, $p_password, $p_issue ) {
 			$note_attr = isset ( $t_note['note_type'] ) ? $t_note['note_attr'] : '';
 
 			$t_view_state_id = mci_get_enum_id_from_objectref( 'view_state', $t_view_state );
-			bugnote_add( $t_issue_id, $t_note['text'], mci_get_time_tracking_from_note( $t_issue_id, $t_note ), $t_view_state_id == VS_PRIVATE, $note_type, $note_attr, $t_user_id, FALSE );
+			bugnote_add( $t_issue_id, $t_note['text'], $t_thread_index = null, mci_get_time_tracking_from_note( $t_issue_id, $t_note ), $t_view_state_id == VS_PRIVATE, $note_type, $note_attr, $t_user_id, FALSE );
 		}
 	}
 
@@ -1008,7 +1008,7 @@ function mc_issue_update( $p_username, $p_password, $p_issue_id, $p_issue ) {
 				$note_type = isset ( $t_note['note_type'] ) ? (int) $t_note['note_type'] : BUGNOTE;
 				$note_attr = isset ( $t_note['note_type'] ) ? $t_note['note_attr'] : '';
 
-				bugnote_add( $p_issue_id, $t_note['text'], mci_get_time_tracking_from_note( $p_issue_id, $t_note ), $t_view_state_id == VS_PRIVATE, $note_type, $note_attr, $t_user_id, FALSE );
+				bugnote_add( $p_issue_id, $t_note['text'], $t_thread_index = null, mci_get_time_tracking_from_note( $p_issue_id, $t_note ), $t_view_state_id == VS_PRIVATE, $note_type, $note_attr, $t_user_id, FALSE );
 			}
 		}
 
@@ -1146,7 +1146,7 @@ function mc_issue_note_add( $p_username, $p_password, $p_issue_id, $p_note ) {
 	$note_type = isset ( $p_note['note_type'] ) ? (int) $p_note['note_type'] : BUGNOTE;
 	$note_attr = isset ( $p_note['note_type'] ) ? $p_note['note_attr'] : '';
 
-	return bugnote_add( $p_issue_id, $p_note['text'], mci_get_time_tracking_from_note( $p_issue_id, $p_note ), $t_view_state_id == VS_PRIVATE, $note_type, $note_attr, $t_user_id );
+	return bugnote_add( $p_issue_id, $p_note['text'], $p_thread_index = null, mci_get_time_tracking_from_note( $p_issue_id, $p_note ), $t_view_state_id == VS_PRIVATE, $note_type, $note_attr, $t_user_id );
 }
 
 /**

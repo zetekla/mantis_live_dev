@@ -7,7 +7,6 @@
 	# See the README and LICENSE files for details
 
 	# This page receives an E-Mail via POP3 or IMAP and generates an Report
-
 	require_api( 'bug_api.php' );
 	require_api( 'bugnote_api.php' );
 	require_api( 'user_api.php' );
@@ -279,7 +278,7 @@ class ERP_mailbox_api
 	#  set $this->result to an array with the error or show it
 	private function custom_error( $p_error_text, $p_is_error = TRUE )
 	{
-		$t_error_text = 'Message: ' . $p_error_text . "\n";
+		$t_error_text = 'Custom Error Message: ' . $p_error_text . "\n";
 
 		if ( $p_is_error === TRUE )
 		{
@@ -486,7 +485,7 @@ class ERP_mailbox_api
 
 	# --------------------
 	# Process a single email from either a pop3 or imap mailbox
-	# Returns true or false based on succesfull email retrieval from the mailbox
+	# Returns true or false based on successful email retrieval from the mailbox
 	private function process_single_email( $p_i, $p_overwrite_project_id = FALSE )
 	{
 		$this->show_memory_usage( 'Start process single email' );
@@ -636,7 +635,7 @@ class ERP_mailbox_api
 		$t_email[ 'In-Reply-To' ] = $t_mp->inreplyto();
 		$t_email[ 'Thread-Index' ] = $t_mp->threadindex();
 		
-		$t_email[ 'Replies' ] = build_reply( $t_email[ 'X-Mantis-Body' ] );
+		$t_email[ 'Replies' ][] = $t_mp->replies();
 
 		$this->show_memory_usage( 'Finished Mail Parser' );
 
@@ -777,7 +776,7 @@ class ERP_mailbox_api
 			// @TODO@ Disabled for now until we find a good solution on how to handle the reporters possible lack of access permissions
 //			access_ensure_bug_level( config_get( 'add_bugnote_threshold' ), $f_bug_id );
 
-			$t_description = $p_email[ 'Replies' ];
+			$t_description = $p_email[ 'Replies' ][0];
 
 			//$t_description = $this->identify_replies( $t_description );
 			//$t_description = $this->strip_signature( $t_description );
@@ -789,7 +788,7 @@ class ERP_mailbox_api
 			# Event integration
 			# Core mantis event already exists within bugnote_add function
 			$t_description = event_signal( 'EVENT_ERP_BUGNOTE_DATA', $t_description, $t_bug_id );
-
+				
 			if ( bug_is_resolved( $t_bug_id ) )
 			{
 				# Reopen issue and add a bug note
@@ -798,7 +797,12 @@ class ERP_mailbox_api
 			elseif ( !is_blank( $t_description ) )
 			{
 				# Add a bug note
-				bugnote_add( $t_bug_id, $t_description );
+				//bugnote_add( $t_bug_id, $t_description ,$p_email[ 'Thread-Index' ]);
+				$t_bugnote_id = bugnote_add( $t_bug_id, $t_description, $p_email[ 'Thread-Index' ]);
+				if ( !$t_bugnote_id ) {
+					error_parameters( lang_get( 'bugnote' ) );
+					trigger_error( ERROR_EMPTY_FIELD, ERROR );
+				}
 			}
 		}
 		elseif ( $this->_mail_add_bug_reports )
@@ -1291,17 +1295,18 @@ class ERP_mailbox_api
 	private function mail_is_a_bugnote( $p_mail_subject, $p_references , $p_thread_index)
 	{
 		$t_bug_id = $this->get_bug_id_from_subject( $p_mail_subject );
-		if ( $t_bug_id == FALSE){
-			$t_bug_id = $this->get_bug_id_from_threadindex( $p_thread_index );
-		}
 		if ( $t_bug_id !== FALSE && bug_exists( $t_bug_id ) )
 		{
 			return( $t_bug_id );
 		}
-
 		//Get the ids from Mail References(header)
 		$t_bug_id = $this->get_bug_id_from_references( $p_references );
-
+		if ( $t_bug_id !== FALSE && bug_exists( $t_bug_id ) )
+		{
+			return( $t_bug_id );
+		}
+		//Get the ids from Mail Thread-Index
+		$t_bug_id = $this->get_bug_id_from_threadindex( $p_thread_index );
 		if ( $t_bug_id !== FALSE && bug_exists( $t_bug_id ) )
 		{
 			return( $t_bug_id );
@@ -1364,24 +1369,15 @@ class ERP_mailbox_api
 	}
 	# --------------------
 	# Get the Bug ID from threadindex
-	private function get_bug_id_from_threadindex( $p_references )
+	private function get_bug_id_from_threadindex( $p_thread_index )
 	{
-		if( $this->_mail_use_thread_index )
-		{
-			$p_references = (array) $p_references;
+		$query = 'SELECT issue_id FROM ' . plugin_table( 'msgids' ) . ' WHERE thread_index=' . db_param();
+			$t_bug_id = db_result( db_query_bound( $query, array( $p_thread_index ) ) );
 
-			foreach( $p_references AS $t_reference ) 
+			if( $t_bug_id !== FALSE ) 
 			{
-				$query = 'SELECT issue_id FROM ' . plugin_table( 'msgids' ) . ' WHERE thread_index=' . db_param();
-				$t_bug_id = db_result( db_query_bound( $query, array( $t_reference ), 1 ) );
-
-				if( $t_bug_id !== FALSE ) 
-				{
-					return( $t_bug_id );
-				}
+				return( $t_bug_id );
 			}
-		}
-
 		return( FALSE );
 	}
 
@@ -1394,7 +1390,7 @@ class ERP_mailbox_api
 			if ( !is_blank( $p_msg_id ) )
 			{
 				// Check whether the msg_id is already in the database table
-				$t_bug_id = $this->get_bug_id_from_references( $p_msg_id );
+				//$t_bug_id = $this->get_bug_id_from_references( $p_msg_id );
 				$t_bug_id = $this->get_bug_id_from_threadindex( $p_thread_index );
 
 				if( $t_bug_id === FALSE )

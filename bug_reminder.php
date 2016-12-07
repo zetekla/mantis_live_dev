@@ -84,7 +84,7 @@
 			}
 			$t_attr .= $t_recipient;
 		}
-		bugnote_add( $f_bug_id, $f_body, 0, config_get( 'default_reminder_view_status' ) == VS_PRIVATE, REMINDER, $t_attr, NULL, FALSE );
+		bugnote_add( $f_bug_id, $f_body, $f_thread_index = null, 0, config_get( 'default_reminder_view_status' ) == VS_PRIVATE, REMINDER, $t_attr, NULL, FALSE );
 	}
 
 	form_security_purge( 'bug_reminder' );

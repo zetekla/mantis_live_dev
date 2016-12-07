@@ -124,7 +124,7 @@ function bugnote_is_user_reporter( $p_bugnote_id, $p_user_id ) {
  * @return false|int false or indicating bugnote id added
  * @access public
  */
-function bugnote_add( $p_bug_id, $p_bugnote_text, $p_time_tracking = '0:00', $p_private = false, $p_type = BUGNOTE, $p_attr = '', $p_user_id = null, $p_send_email = TRUE, $p_log_history = TRUE) {
+function bugnote_add( $p_bug_id, $p_bugnote_text, $p_thread_index = null, $p_time_tracking = '0:00', $p_private = false, $p_type = BUGNOTE, $p_attr = '', $p_user_id = null, $p_send_email = TRUE, $p_log_history = TRUE) {
 	$c_bug_id = db_prepare_int( $p_bug_id );
 	$c_time_tracking = helper_duration_to_minutes( $p_time_tracking );
 	$c_type = db_prepare_int( $p_type );
@@ -150,11 +150,16 @@ function bugnote_add( $p_bug_id, $p_bugnote_text, $p_time_tracking = '0:00', $p_
 	$t_bugnote_table = db_get_table( 'mantis_bugnote_table' );
 
 	# Event integration
-	$t_bugnote_text = event_signal( 'EVENT_BUGNOTE_DATA', $p_bugnote_text, $c_bug_id );
+	$t_bugnote_text = event_signal( 'EVENT_BUGNOTE_DATA', $p_bugnote_text, $c_bug_id);
 
 	# insert bugnote text
-	$query = 'INSERT INTO ' . $t_bugnote_text_table . ' ( note ) VALUES ( ' . db_param() . ' )';
-	db_query_bound( $query, Array( $t_bugnote_text ) );
+	//$query = 'INSERT INTO ' . $t_bugnote_text_table . ' ( note ) VALUES ( ' . db_param() . ' )';
+	$query = "INSERT INTO $t_bugnote_text_table
+				(note, thread_index )
+			VALUES
+				(" . db_param() . ', ' . db_param() . ' )';
+
+	db_query_bound( $query, Array( $t_bugnote_text , $p_thread_index) );
 
 	# retrieve bugnote text id number
 	$t_bugnote_text_id = db_insert_id( $t_bugnote_text_table );

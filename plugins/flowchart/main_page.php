@@ -1,8 +1,7 @@
 <?php
-require_once( "plugins/Serials/core/format_check_api.php" );
 require_once( 'current_user_api.php' );
 auth_ensure_user_authenticated();
-access_ensure_global_level( plugin_config_get( 'serials_view_threshold' ) );
+access_ensure_global_level( plugin_config_get( 'fc_view_threshold' ) );
 html_page_top1();
 html_page_top2();
 ?>
@@ -24,9 +23,6 @@ html_page_top2();
 	}, {
 		path: UTILS_BOWER_URL+"/bootstrap/css/",
 		ref: "bootstrap.css"
-	}, {
-		path: PLUGIN_URL_SERIALS+"/js/view_model/",
-		ref: "ui_data.js"
 	});
 	var user = "<?php echo user_get_field( auth_get_current_user_id() , 'realname' ) ?>";
 	var userid = "<?php echo preg_replace('/\D/','', user_get_field( auth_get_current_user_id() , 'username' )) ?>"

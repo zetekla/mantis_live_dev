@@ -9,11 +9,8 @@ function format_config(e){
 		type:'POST',
 		url: 'plugin.php?page=Serials/controllers/format_config.php',
 		data: postdata,
-		//contentType: "application/json",
-		// dataType: 'json'
 	}).done(function(data){
 		data = JSON.parse(data);
-		console.log(data);
 		if (!data[0]){
 			$("#format").val("");
 			$("#format_example").val("");
@@ -21,9 +18,17 @@ function format_config(e){
 			$("#format").val(data[0].format);
 			$("#format_example").val(data[0].example);
 		}
-		
+		var e = document.getElementById("format");
+		var scope = angular.element(e).scope();
+		var f = document.getElementById("format_example");
+		var scope = angular.element(f).scope();
+		scope.format = $('#format').val();
+		scope.format_example = $('#format_example').val();
+		scope.$digest();
 		});
 }
+
+var maxWidth = 0;
 
 var format_update =function(){
 	dnm_data.unique_key 	= $("#key").val();
@@ -36,7 +41,6 @@ var format_update =function(){
 	};
 	
 	if (!dnm_data.format || !dnm_data.format_example ){
-		console.log("Format or Format Example is Empty");
 		$("#format_update").removeClass("btn-primary")
 			.addClass("btn-warning");
 		setTimeout(reset_btn,5000);
@@ -45,10 +49,7 @@ var format_update =function(){
 			type:'POST',
 			url: 'plugin.php?page=Serials/controllers/format_update.php',
 			data: postdata,
-			//contentType: "application/json",
-			// dataType: 'json'
 		}).done(function(data){
-			console.log(data);
 			if (data == 'success'){
 			$("#format_update").removeClass("btn-primary")
 				.addClass("btn-success");
@@ -75,89 +76,190 @@ var search_process = function(){
 	dnm_data.scan_input   = $("#scan_result").val();
 	dnm_data.unique_key 	= $("#key").val();
 	dnm_data.session_id		= $("#session_id").val();
+	dnm_data.retrieval		= document.getElementById("retrieval").checked;
 	var postdata ={
 		work_order: dnm_data.work_order,
 		serial_scan: dnm_data.scan_input,
 		unique_key:	dnm_data.unique_key,
-		session_id: dnm_data.session_id	
+		session_id: dnm_data.session_id,
+		retrieval: dnm_data.retrieval
 	};
-	console.log(postdata);
-
-	/* global $*/
 	$.ajax({
 		type:'POST',
 		url: 'plugin.php?page=Serials/controllers/search.php',
 		data: postdata,
-		//contentType: "application/json",
-		// dataType: 'json'
 	}).done(function(data){
 		data = JSON.parse(data);
-		console.log(data);
-		$("#log-wrapper").empty();
-		$("#search-wrapper") .empty();
-		$("#virhe").empty().append("<b>Search Results:</b>")
-			.addClass("alert-info")
-			.css({  "max-height":"300px",
-				"overflow-y" : "auto" });
+		if(!document.getElementById("retrieval").checked){
+		if(data.all.count >0){
+			$("#log-wrapper").empty();
+			$("#search-wrapper") .empty();
+			$("#virhe").empty().append("<b>Search Results:</b>")
+				.addClass("alert-info")
+				.css({  "max-height":"300px",
+					"overflow-y" : "auto" });
+			var serials = [];
+				if (data.all){
+				dnm_data.work_order = data.all.response[0].work_order;		
+					var output2 = ` <style>
+									  tr:nth-child(odd){ background-color: white;}
+									  td { nowrap; padding: 1px 3px;}
+								  </style>
+								  <table class="col-md-12">
+								  <tr>`;
+					if (data.all.count > 0){
+						data.all.response.map(function(d, idx){
+						serials.push(d.serial_scan);
+							if (idx < 1){
+								for(var i in d){
+									output2 += '<th class="text-center text-uppercase">' + i + '</th>';
+								}
+								output2 += '<th class="text-center text-uppercase">Count</th></tr>';
+							}
+							output2 += '<tr>';
+							var c = 0;
+							for(var j in d){
+								++c;
+								if (c==8){
+									output2 += '<td class="text-center"><a href="#" id="klikaa" class="klikaa_span" onClick="klikaaMethod(this)">' + d[j] + '</a></td>';
+								}else{
+									output2 += '<td class="text-center">' + d[j] + '</td>';
+								}
+							}
+							output2 += '<td class="text-center">' + String(idx+1) + '</td></tr>' ;
+						});
+					}
+					$("#search-wrapper")
+						.append( output2 + "<br/>")
+						.addClass("bg-success")
+						.css({  "max-height":"300px", "overflow-y" : "auto" })
+						.animate({"scrollTop": $("#search-wrapper")[0].scrollHeight}, "slow");
 
-    var serials = [];
-		if (data.all){
-		console.log(data.all.response[0].work_order);
-		dnm_data.work_order = data.all.response[0].work_order;		
+					  if($("#session_id").val()){
+						var output1 = "";
+						var i = 0;
+						dnm_data.quantity_count = 0;
+						serials.map(elem =>{
+						  i++;
+						  dnm_data.quantity_count++;
+						  output1 += '<div  class="pull-left" style="padding:2px 25px; display: inline-block"><font color="blue">' + String(i) + '. </font>' + elem + '</div>';
+						});
+						$("#log-wrapper")
+						  .append(output1)
+						  .addClass("bg-success")
+						  .css({  "max-height":"300px", "overflow-y" : "auto" })
+						  .animate({"scrollTop": $("#log-wrapper")[0].scrollHeight}, "slow");
+						}
+					$("#log-wrapper").children().each(function(index){
+						if (($(this).width() + 50) > maxWidth){
+							maxWidth = $(this).width() + 50;
+						}
+					});
+					$("#log-wrapper").children().each(function(index){
+						var c_width = $(this).width();
+						if (c_width < maxWidth){
+							$(this).css( {"width" : maxWidth + "px"} );
+						}
+					});	  
+			}
+		}else {
+			$("#log-wrapper").empty();
+			$("#search-wrapper") .empty();
+			$("#virhe").empty().append("<b>Search returned No Results!</b>")
+				.addClass("alert-danger")
+				.css({  "max-height":"300px",
+					"overflow-y" : "auto" });
+		}
+		}else {
+			var serials = [];
+			var retrivel_error = false;
+			var skip=false;
 			var output2 = ` <style>
-			                  tr:nth-child(odd){ background-color: white;}
-			                  td { nowrap; padding: 1px 3px;}
-		                  </style>
-		                  <table class="col-md-12">
-		                  <tr>`;
-			if (data.all.count > 0){
-				data.all.response.map(function(d, idx){
-				serials.push(d.serial_scan);
-
+									  tr:nth-child(odd){ background-color: white;}
+									  td { nowrap; padding: 1px 3px;}
+								  </style>
+								  <table class="col-md-12">
+								  <tbody id="retrieval_log">
+								  <tr>`;
+			try{
+				data.retrieval.response.map(function(d, idx){					
+					serials.push(d.serial_scan);
 					if (idx < 1){
 						for(var i in d){
-							output2 += '<th class="text-center text-uppercase">' + i + '</th>';
+							if(!$("#swdiv").html().includes(i)){
+							output2 += '<th class="text-center text-uppercase">' + i + '</th>';	
+							}else{
+								skip=true;
+								break;
+							}
+							
 						}
-						output2 += '<th class="text-center text-uppercase">Count</th></tr>';
+						if(!skip){
+						output2 += '<th class="text-center text-uppercase">Count</th></tr>';	
+						}
 					}
-
-					output2 += '<tr>';
+					if (skip){
+					output2 = '<tr>';
+					}else{
+						output2 += '<tr>';
+					}
 					var c = 0;
 					for(var j in d){
-						// output2 += '<td class="text-center"><span id="klikaa" class="klikaa_span" onClick="klikaaMethod(d[j])">' + d[j] + '</span></td>';
-						// output2 += '<td class="text-center"><a href="#" id="klikaa" class="klikaa_span">' + d[j] + '</a></td>';
 						++c;
-						if (c==8){
-							output2 += '<td class="text-center"><a href="#" id="klikaa" class="klikaa_span" onClick="klikaaMethod(this)">' + d[j] + '</a></td>';
-						}else{
-							output2 += '<td class="text-center">' + d[j] + '</td>';
-						}
+						output2 += '<td class="text-center">' + d[j] + '</td>';
 					}
 					output2 += '<td class="text-center">' + String(idx+1) + '</td></tr>' ;
-				});
-      		}
-			$("#search-wrapper")
-				.append( output2 + "<br/>")
-				.addClass("bg-success")
-				.css({  "max-height":"300px", "overflow-y" : "auto" })
-				.animate({"scrollTop": $("#search-wrapper")[0].scrollHeight}, "slow");
-
-			  if($("#session_id").val()){
-				var output1 = "";
+			});
+			}catch(e){
+				if(e){
+					$('#scan_result').val($('#scan_result').val() + ' was not found');
+					retrivel_error = true;
+				}
+			}
+			var output1 = "";
 				var i = 0;
-				dnm_data.quantity_count = 0;
 				serials.map(elem =>{
-				  i++;
-				  dnm_data.quantity_count++;
-				  output1 += '<div  class="pull-left" style="min-width: 150px;padding:0px 25px"><font color="blue">' + String(i) + '.</font> <span >' + elem + '</span></div>';
+					if (!$("#printable").html().includes(elem)){
+					 i++;
+					  dnm_data.quantity_count++;
+					  output1 += '<div  class="pull-left" style="padding:2px 25px; display: inline-block"><font color="blue">' + dnm_data.quantity_count + '. </font>' + elem + '</div>';
+					  retrivel_error = false;				  
+					}else{
+					  $('#scan_result').val($('#scan_result').val() + ' is a Duplication');	
+					  retrivel_error = true;
+					}
 				});
+				if(!retrivel_error){
+					if(skip){
+						$("#retrieval_log")
+						.append( output2 );
+					}else{
+						$("#search-wrapper")
+						.append( output2 + "<br/>")
+						.addClass("bg-success")
+						.css({  "max-height":"300px", "overflow-y" : "auto" })
+						.animate({"scrollTop": $("#search-wrapper")[0].scrollHeight}, "slow");
+					}
+				}
+					
+				document.getElementById('scan_result').select();	
 				$("#log-wrapper")
 				  .append(output1)
 				  .addClass("bg-success")
 				  .css({  "max-height":"300px", "overflow-y" : "auto" })
 				  .animate({"scrollTop": $("#log-wrapper")[0].scrollHeight}, "slow");
-			  }
-		}
+				$("#log-wrapper").children().each(function(index){
+					if (($(this).width() + 50) > maxWidth){
+						maxWidth = $(this).width() + 50;
+					}
+				});
+				$("#log-wrapper").children().each(function(index){
+					var c_width = $(this).width();
+					if (c_width < maxWidth){
+						$(this).css( {"width" : maxWidth + "px"} );
+					}
+				});
+		}	
 	});
 };
 
@@ -169,21 +271,24 @@ String.prototype.re = function(pattern){
 
 var klikaaMethod = function(v){
 	$("#session_id").val(v.innerHTML);
+	$("#scan_result").val("");
 	document.getElementById('session_id').disabled=true;
 	search_process();
 }
 
 var scan_process = function(v){
-	dnm_data.sales_order  = $('input[name="sales_order"]').val();
+	dnm_data.sales_order  = $('#field7').val();
 	dnm_data.revision     = $("#field3").val();
-	dnm_data.unique_key  	= $('input[name="unique_key"]').val();
-	dnm_data.work_order     = $('input[name="work_order"]').val();
+	dnm_data.unique_key  	= $('#key').val();
+	dnm_data.work_order     = $('#field0').val();
+	dnm_data.customer_name = $('#field1').val();
 	if(!document.getElementById('session_id').disabled){
 		document.getElementById('session_id').disabled=true;
 		$("#session_id").val("");
 	}
 	dnm_data.session_id		= $("#session_id").val();
 	$("#search-wrapper").empty();
+	var rework = angular.element(document.querySelector('[ng-model="rework"]')).scope().rework;
 	var postdata ={
 		new_scan: v,
 		customer_id:       dnm_data.customer_id,
@@ -194,27 +299,21 @@ var scan_process = function(v){
 		revision:          dnm_data.revision,
 		unique_key:		   dnm_data.unique_key,
 		work_order:		   dnm_data.work_order,
-		session_id:		   dnm_data.session_id
+		session_id:		   dnm_data.session_id,
+		customer_name:	   dnm_data.customer_name,
+		rework:			   rework
 	};
-
-	console.log(postdata);
-
 	$.ajax({
 		type:'POST',
 		url: 'plugin.php?page=Serials/controllers/scan_proc.php',
 		data: postdata,
-		//contentType: "application/json",
-		// dataType: 'json'
 	}).done(function(data){
 		try{
 			var data_in = JSON.parse( data );
-			console.log(data_in);
 		}
 		catch(e){
 		if (e.constructor == SyntaxError){
-			console.log('syntaxError');
 			var data_in = JSON.parse('[{"error_code":"undefined"}]');
-			console.log(data_in);
 		}}
 		switch (data_in[0].error_code){
 			case 'undefined':
@@ -224,6 +323,7 @@ var scan_process = function(v){
 				$("#virhe").empty().append("Attention: " + data)
 					.css({  "max-height":"300px",
 						"overflow-y" : "auto" });
+				$("#error_log").append("<div>This entry was a Duplication - " + postdata.new_scan);		
 			}else {
 				$("#virhe") .removeClass("alert-danger")
 					.addClass("alert-success");
@@ -232,16 +332,26 @@ var scan_process = function(v){
 					document.getElementById('session_id').disabled=true;
 					$("#session_id").val(data_in[0].session_id);
 				}
+				
 				document.getElementById('scan_result').select();
-				var data_output =  '<font color="blue">' + dnm_data.quantity_count + '.</font><span> ' + data_in[0].scan + '</span>';
-				$("#virhe").empty().append("<div class='text-center'>last scan: " + data_output + "</div>");
-				data_output ='<div style="min-width: 150px;padding:0px 25px">' + data_output + '</div>';
-
-				$("#log-wrapper")  .append( data_output )
+				var data_output = '<div class="pull left" style="padding:2px 25px; display: inline-block"><font color="blue">' + dnm_data.quantity_count + '. </font>' + data_in[0].scan + '</div>';
+				$("#virhe").empty().append("<div class='text-center'><b>Scan Successful!</b>: " + data_output + "</div>");
+				$("#log-wrapper").append( data_output )
 					.addClass("bg-success")
 					.css({  "max-height":"300px",
 						"overflow-y" : "auto" })
 					.animate({"scrollTop": $("#log-wrapper")[0].scrollHeight}, "slow");
+				$("#log-wrapper").children().each(function(index){
+					if (($(this).width() + 50) > maxWidth){
+						maxWidth = $(this).width() + 50;
+					}
+				});
+				$("#log-wrapper").children().each(function(index){
+					var c_width = $(this).width();
+					if (c_width < maxWidth){
+						$(this).css( {"width" : maxWidth + "px"} );
+					}
+				});	
 			}
 			break;
 			case 'Error 20':
@@ -317,27 +427,19 @@ var customer_assembly = function(){
 	return emi_assembly;
 };
 
-/* String.prototype.replaceArray = function(find) {
-  var replaceString = this;
-  for (var i = 0; i < find.length; i++) {
-    replaceString = replaceString.replace(find[i], replace[i]);
-  }
-  return replaceString;
-}; */
-
 var print_html = function(){
 	var now = new Date();
 	var today = now.toLocaleDateString();
 	var header_Content= `<html>
     <head>
-	<title>EMI - Serial List generated by `+ user + `- Session ID: ` + $("#session_id").val() + `</title>
+	<title>Serial List - Session ID: ` + $("#session_id").val() + `</title>
 	<style>
         input[type="text"]{font-family:arial;font-size:12;padding:5px;font-weight:bold;width:100%;display:table-cell;margin:0px 10px;}
         input[type="checkbox"]{transform:scale(1.5);font-family:arial;font-size:12;padding:5px;font-weight:bold;}
         div{float:left;}
         div[class="box"]{float:left;display:table;width:100%;}
         p{display:table-cell;width:1px;white-space: nowrap;}
-      </style>
+	</style>
     </head><body style="width:670px">
     <div style="width:670px;font-family:arial;font-size:12px;">
       <img src="http://www.eminc.com/skin/skin1/images/en/framework/top_banner.jpg" width="670">
@@ -364,8 +466,11 @@ var print_html = function(){
 	 <hr style="width:670px;float:left">`;
   var x=window.open ("","Serial List");
   var remove_css = "max-height: 300px;";
-  x.document.open().write(header_Content +'<div style="max-width:670px;font-family:arial;font-size:12px">'+ $("#printable").html().replace(remove_css,"") +
-    '</div></body></html>');
+  var str = $("#printable").html().replace(remove_css,"")
+  var replace_width = new RegExp( "width\: " + maxWidth , "g" );
+  var new_width = "width: " + (maxWidth * .75);
+  str = str.replace(replace_width, new_width);
+  x.document.open().write(header_Content +'<div style="max-width:670px;font-family:arial;font-size:12px">' + str + '</div></body></html>');
   x.document.close();
 };
 

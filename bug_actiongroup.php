@@ -186,7 +186,7 @@
 
 					# Add bugnote if supplied
 					if ( !is_blank( $f_bug_notetext ) ) {
-						bugnote_add( $t_bug_id, $f_bug_notetext, null, $f_bug_noteprivate );
+						bugnote_add( $t_bug_id, $f_bug_notetext, $f_thread_index = null, null, $f_bug_noteprivate );
 						# No need to call email_generic(), bugnote_add() does it
 					} else {
 						email_generic( $t_bug_id, 'updated', 'email_notification_title_for_action_bug_updated' );

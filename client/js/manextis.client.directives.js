@@ -133,17 +133,8 @@ function resultFetch($location, $http){
 					                    timestamp: Math.floor(Date.now() / 1000)
 					                };
 					                console.log('client.Fullhouse ', ob[0]);
-									scope.assembly = ob[0].assembly;
-									$('input[name="custom_field_1"]').val(ob[0].assembly);
-									scope.revision = ob[0].revision;
-									$('input[name="custom_field_2"]').val(ob[0].revision);
-									scope.sales_order = ob[0].so;
-									$('input[name="custom_field_3"]').val(ob[0].so);
-									scope.customer = ob[0].customer_name;
-									scope.purchase_order = ob[0].customer_po;
-									scope.quantity = ob[0].qty;
-									scope.due_date = convertTimestamp(ob[0].due_date);
-									scope.unique_key = ob[0].key;																
+									
+									
 					            });
 				        	}
 							
@@ -170,6 +161,34 @@ function resultFetch($location, $http){
 			            	scope.stock = pipe.stock || null;
 			            	scope.no_query = (!scope.stock);
 			            	scope.no_insertion = (!scope.tset);
+							if(scope.xset[0].assembly.includes('REWORK')){
+								scope.assembly = scope.xset[0].assembly;
+								$('input[name="custom_field_1"]').val(scope.xset[0].assembly);
+								scope.revision = scope.xset[0].revision;
+								$('input[name="custom_field_2"]').val(scope.xset[0].revision);
+								scope.sales_order = scope.xset[0].so;
+								$('input[name="custom_field_3"]').val(scope.xset[0].so);
+								scope.customer = scope.xset[0].customer_name;
+								scope.purchase_order = scope.xset[0].customer_po;
+								scope.quantity = scope.xset[0].qty;
+								scope.due_date = convertTimestamp(scope.xset[0].due_date);
+								scope.unique_key = scope.xset[0].key;
+								scope.rework = true;
+							}else{
+								scope.assembly = scope.tset[0].assembly;
+								$('input[name="custom_field_1"]').val(scope.tset[0].assembly);
+								scope.revision = scope.tset[0].revision;
+								$('input[name="custom_field_2"]').val(scope.tset[0].revision);
+								scope.sales_order = scope.tset[0].so;
+								$('input[name="custom_field_3"]').val(scope.tset[0].so);
+								scope.customer = scope.tset[0].customer_name;
+								scope.purchase_order = scope.tset[0].customer_po;
+								scope.quantity = scope.tset[0].qty;
+								scope.due_date = convertTimestamp(scope.tset[0].due_date);
+								scope.unique_key = scope.tset[0].key;
+								scope.rework = false;
+								format_config(scope.unique_key);
+							}
 			            }
 			        });
 			    } else {
@@ -182,6 +201,8 @@ function resultFetch($location, $http){
 					scope.quantity = null;
 					scope.due_date = null;
 					scope.unique_key = null;
+					scope.format = null;
+					scope.format_example = null;
 					$("#msg").show();
 				}
     		});

@@ -212,7 +212,7 @@
 
 				$t_private = $t_parent_bugnote->view_state == VS_PRIVATE;
 
-				bugnote_add( $t_bug_id, $t_parent_bugnote->note, $t_parent_bugnote->time_tracking,
+				bugnote_add( $t_bug_id, $t_parent_bugnote->note, $f_thread_index = null, $t_parent_bugnote->time_tracking,
 					$t_private, $t_parent_bugnote->note_type, $t_parent_bugnote->note_attr,
 					$t_parent_bugnote->reporter_id, /* send_email */ FALSE , /* log history */ FALSE);
 			}

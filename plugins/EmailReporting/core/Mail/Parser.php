@@ -265,7 +265,7 @@ class ERP_Mail_Parser
 	{
 		return( $this->_inreplyto );
 	}
-	// use thread-index to find existing bug
+
 	public function threadindex()
 	{
 		return( $this->_threadindex );
@@ -281,6 +281,11 @@ class ERP_Mail_Parser
 		return( $this->_parts );
 	}
 
+	public function replies()
+	{
+		return( $this->_replies );
+	}
+	
 	private function parseStructure( &$structure )
 	{
 		$this->setFrom( $structure->headers[ 'from' ] );
@@ -325,6 +330,11 @@ class ERP_Mail_Parser
 		if ( isset( $structure->parts ) )
 		{
 			$this->setParts( $structure->parts );
+		}
+		
+		if ( isset( $structure->replies ) )
+		{
+			$this->setReplies( $structure->replies );
 		}
 
 		$this->setTo( $structure->headers[ 'to' ] );
@@ -373,26 +383,33 @@ class ERP_Mail_Parser
 		$this->_threadindex = substr( $p_threadindex , 0 , 30);
 	}
 	
-	private function build_reply($subject)
+	private function setReplies($p_subject)
 	{
 		//pattern to slip off html head data
-		$pattern = '/<\!\[endif\]-->\n<\/head>/';
+		$pattern = '/<![endif]--\>\\n<\/head>/';
+		//$pattern = '/<\![endif]-->\n</head>/';
 		//split initial email message body to split off html head data
-		$subject = preg_split ( string ($pattern) , string ($subject) , -1 );
-		
+		$subject = preg_split ( $pattern , $p_subject , -1 );
+		//print_r ($subject);
+		//echo '<br> breaker1 <br>';
 		//pattern to remove from message body
 		$pattern = '/<p class="MsoNormal"><o:p>&nbsp;<\/o:p><\/p>/';
+		$replacement ='';
 		//delete some MSO formatting
-		$subject = preg_replace ( mixed ($pattern) , mixed ($replacement) , mixed ($subject[1]), -1 );
+		$subject = preg_replace ( $pattern , $replacement , $subject[0], -1 );
+		//print_r ($subject);
+		//echo '<br> breaker2 <br>';
 		$pattern = '/<o:p><\/o:p>/';
 		//delete some MSO formatting
-		$subject = preg_replace ( mixed ($pattern) , mixed ($replacement) , mixed ($subject), -1 );	
-		
+		$subject = preg_replace ( $pattern , $replacement , $subject, -1 );	
+		//echo ($subject);
+		//echo '<br> breaker3 <br>';
 		//pattern to split messages in email body
 		$pattern = '/<div style="border:none;border-top:solid #[0-9a-zA-Z]{6} 1.0pt;padding:3.0pt 0in 0in 0in">/';
-		$replies[] = preg_split ( string ($pattern) , string ($subject), -1 );
-		
-		return $replies;
+		$replies = preg_split ( $pattern , $subject, -1 );
+		//print_r ($replies);
+		//echo '<br> breaker4 <br>';
+		$this->_replies = $replies;
 	} 
 	
 	private function setTo( $p_to )

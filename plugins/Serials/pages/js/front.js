@@ -1,7 +1,3 @@
-(function () {
-	$('#field0').focus();
-	key.disabled=true;
-})();
 
 var dnm_data = {
   user: $('.login-info-left :first-child').text(),
@@ -11,7 +7,8 @@ var dnm_data = {
 
 $(document).ready(function() {
 //document.getElementById('key').disabled=true;
-
+	$("#field0").focus();
+	key.disabled=true;
   $(document).on('keyup',function(f){
     f.preventDefault;
     if (f.which == 120) // F9
@@ -78,6 +75,7 @@ $(document).ready(function() {
     },
     click: function(){
         $(this).css("background-color", "yellow");
+		document.getElementById('scan_result').select();
     },
     keyup: function(e){
       e.preventDefault();
@@ -86,26 +84,50 @@ $(document).ready(function() {
           search_process();
         break;
         case 13:
-        if( $("#field7").val() == "" )
-            document.getElementById('typeahead-field7').style.color= "red";
-        else  {
+        if( $("#field7").val() == "" ){
+			document.getElementById('typeahead-field7').style.color= "red";
+		}else{
           document.getElementById('typeahead-field7').style.color="black";
   				document.getElementById('field1').disabled=true;
   				document.getElementById('field2').disabled=true;
   				document.getElementById('field3').disabled=true;
   				document.getElementById('field7').disabled=true;
 				document.getElementById('field0').disabled=true;
+				document.getElementById('retrieval').disabled=true;
         }
-        scan_process($(this).val());
+		if(document.getElementById("retrieval").checked){
+			document.getElementById('session_id').disabled=true;
+			search_process();
+		}else{
+			scan_process($(this).val());
+		}      
         break;
       }
     }
   });
   
-  $("#myform").show();
-  
-  $("a.klikaa_span").on('click', function(e){
-      // e.preventDefault();
-      console.log("klikaa tästä");
+  $("button[type='button']").click(function() {
+	 switch(this.id){
+		 case 'numeric' :
+		  var response = prompt("How many Numeric Values", "");
+		  if (!(/[a-z]/i.test(response))) {
+			  var e = document.getElementById("format");
+			  var scope = angular.element(e).scope();
+			  scope.format = $('#format').val() + '[0-9]{' + response + '}';
+			  scope.$digest();
+			  $('#format').focus();
+			}
+		 break;
+		 case 'alpha-numeric' :
+		  var response = prompt("How many Numeric Values", "");
+		  if (!(/[a-z]/i.test(response))) {
+			  var e = document.getElementById("format");
+			  var scope = angular.element(e).scope();
+			  scope.format = $('#format').val() + '[0-9A-Z]{' + response + '}';
+			  scope.$digest();
+			  $('#format').focus();
+			}
+		 break;
+	 }
   });
 });
